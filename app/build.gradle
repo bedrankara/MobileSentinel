@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.chaquo.python'
 
 android {
     compileSdkVersion 29
@@ -6,12 +7,23 @@ android {
 
     defaultConfig {
         applicationId "com.bedrankarakoc.mobilesentinel"
+        sourceSets {
+            main {
+                python {
+                    srcDirs = ["src/main/python"]
+
+                }
+            }
+        }
         minSdkVersion 22
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
     }
 
     buildTypes {
