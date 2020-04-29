@@ -19,6 +19,9 @@ import faulthandler
 import logging
 
 
+GSMTAP_PORT = 4729
+IP_OVER_UDP_PORT = 47290
+
 def initiate_parsing():
 
     # Hardcoded values
@@ -28,5 +31,6 @@ def initiate_parsing():
     print(filepath)
     io_device = iodevices.FileIO([str(filepath)])
     my_parser.set_io_device(io_device)
+    writer = writers.PcapWriter('test', GSMTAP_PORT, IP_OVER_UDP_PORT)
     my_parser.set_writer(writer)
     my_parser.read_dump()
