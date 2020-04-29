@@ -48,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
+                Python py = Python.getInstance();
+                PyObject pyf = py.getModule("setup_parser");
+                PyObject obj = pyf.callAttr("initiate_parsing");
 
 
 
