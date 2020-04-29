@@ -3,6 +3,8 @@
 
 import datetime
 import struct
+from android.os import Environment
+import os
 
 class PcapWriter:
     def __init__(self, filename, port_cp = 4729, port_up = 47290):
@@ -10,7 +12,9 @@ class PcapWriter:
         self.port_up = port_up
         self.ip_id = 0
         self.base_address = 0x7f000001
-        self.pcap_file = open(filename, 'wb')
+        d = str(Environment.getExternalStorageDirectory());
+        filepath = os.path.join(d, filename)
+        self.pcap_file = open(filepath, 'wb')
         self.eth_hdr = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00'
         pcap_global_hdr = struct.pack('<LHHLLLL',
                 0xa1b2c3d4,
@@ -22,6 +26,7 @@ class PcapWriter:
                 1,
                 )
         self.pcap_file.write(pcap_global_hdr)
+        self.pcap_file.flush()
 
     def __enter__(self):
         return self
@@ -59,6 +64,7 @@ class PcapWriter:
                 )
 
         self.pcap_file.write(pcap_hdr + self.eth_hdr + ip_hdr + udp_hdr + sock_content)
+        self.pcap_file.flush()
         self.ip_id += 1
         if self.ip_id > 65535:
             self.ip_id = 0
