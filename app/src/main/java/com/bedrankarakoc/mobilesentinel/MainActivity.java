@@ -39,9 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void printer(String string) {
-        System.out.println(string);
-    }
+
     // Button Listeners
     public void stopLoggingButtonListener() {
         testButton = (Button) findViewById(R.id.testButton);
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+
 
 
 

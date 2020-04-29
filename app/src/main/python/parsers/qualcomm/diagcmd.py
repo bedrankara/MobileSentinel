@@ -318,4 +318,4 @@ def create_extended_message_config_set_mask(first_ssid, last_ssid, *masks):
     return diag_log_config_mask_header + bytes(ext_msg_config_mask_payload)
 
 def log_mask_reserved():
-    return 
+    return
