@@ -16,7 +16,6 @@ from .diagcommoneventparser import DiagCommonEventParser
 from .diaglteeventparser import DiagLteEventParser
 
 import util
-import usb
 import struct
 import calendar, datetime
 import logging
@@ -161,7 +160,6 @@ class QualcommParser:
         self.io_device.write_then_read_discard(util.generate_packet(diagcmd.log_mask_scat_lte()), 0x1000, False)
 
     def parse_diag(self, pkt, hdlc_encoded = True, check_crc = True, radio_id = 0):
-        print("parse_diag reached")
         # Should contain DIAG command and CRC16
         # pkt should not contain trailing 0x7E, and either HDLC encoded or not
         # When the pkt is not HDLC encoded, hdlc_encoded should be set to True
@@ -202,7 +200,6 @@ class QualcommParser:
             return
 
     def run_diag(self, writer_qmdl = None):
-        print("run_diag triggered +++++++++++++++++++++")
         oldbuf = b''
         loop = True
         try:
@@ -240,7 +237,6 @@ class QualcommParser:
         self.io_device.write_then_read_discard(util.generate_packet(b'\x7d\x05\x00\x00\x00\x00\x00\x00'), 0x1000, False)
 
     def parse_dlf(self):
-        print("parse_dlf reached +++++++++++++++++")
         oldbuf = b''
         while True:
             buf = self.io_device.read(0x100000)
@@ -268,7 +264,6 @@ class QualcommParser:
             oldbuf = buf
 
     def read_dump(self):
-        print("read_dump called ++++++++++++++++")
         while self.io_device.file_available:
             self.logger.log(logging.INFO, "Reading from {}".format(self.io_device.fname))
             if self.io_device.fname.find('.qmdl') > 0:
@@ -281,7 +276,6 @@ class QualcommParser:
             self.io_device.open_next_file()
 
     def parse_diag_log(self, pkt: "DIAG_LOG_F data without trailing CRC", radio_id = 0):
-        print("parse_diag_log reached +++++++++++++")
         if len(pkt) < 16:
             return
 
@@ -304,7 +298,6 @@ class QualcommParser:
             return
 
     def parse_diag_ext_msg(self, pkt, radio_id):
-        print("parse_diag_ext_msg called ++++++++++++++++++++")
         # 79 | 00 | 00 | 00 | 00 00 1c fc 0f 16 e4 00 | e6 04 | 94 13 | 02 00 00 00 
         # cmd_code, ts_type, num_args, drop_cnt, TS, Line number, Message subsystem ID, ?
         # Message: two null-terminated strings, one for log and another for filename

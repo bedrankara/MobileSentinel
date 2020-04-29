@@ -94,7 +94,7 @@ class DiagLteLogParser:
             real_rsrp = -180 + meas_rsrp * 0.0625
             real_rssi = -110 + meas_rssi * 0.0625
             real_rsrq = -30 + meas_rsrq * 0.0625
-            print('Radio {}: LTE SCell: EARFCN {}, PCI {:3d}, Measured RSRP {:.2f}, Measured RSSI {:.2f}'.format(self.parent.sanitize_radio_id(radio_id), earfcn, pci, real_rsrp, real_rssi))
+            #print('Radio {}: LTE SCell: EARFCN {}, PCI {:3d}, Measured RSRP {:.2f}, Measured RSSI {:.2f}'.format(self.parent.sanitize_radio_id(radio_id), earfcn, pci, real_rsrp, real_rssi))
         elif pkt[0] == 4: # Version 4
             # Version, RRC standard release, EARFCN, PCI - Serving Layer Priority
             # Measured, Average RSRP, Measured, Average RSRQ, Measured RSSI
@@ -136,7 +136,7 @@ class DiagLteLogParser:
             real_rsrp = -180 + meas_rsrp * 0.0625
             real_rssi = -110 + meas_rssi * 0.0625
             real_rsrq = -30 + meas_rsrq * 0.0625
-            print('Radio {}: LTE SCell: EARFCN {}, PCI {:3d}, Measured RSRP {:.2f}, Measured RSSI {:.2f}'.format(self.parent.sanitize_radio_id(radio_id), earfcn, pci, real_rsrp, real_rssi))
+            #print('Radio {}: LTE SCell: EARFCN {}, PCI {:3d}, Measured RSRP {:.2f}, Measured RSSI {:.2f}'.format(self.parent.sanitize_radio_id(radio_id), earfcn, pci, real_rsrp, real_rssi))
         else:
             self.parent.logger.log(logging.WARNING, 'Unknown LTE ML1 Serving Cell Meas packet version {}'.format(pkt[0]))
             return
@@ -148,7 +148,7 @@ class DiagLteLogParser:
             earfcn = struct.unpack('<L', pkt[4:8])[0]
             q_rxlevmin = (pkt[8] | pkt[9] << 8) & 0x3f
             n_cells = (pkt[8] | pkt[9] << 8) >> 6
-            print('Radio {}: LTE NCell: # cells {}'.format(self.parent.sanitize_radio_id(radio_id), n_cells))
+            #print('Radio {}: LTE NCell: # cells {}'.format(self.parent.sanitize_radio_id(radio_id), n_cells))
             for i in range(n_cells):
                 n_cell_pkt = pkt[12 + 32 * i:12 + 32 * (i + 1)]
                 interim = struct.unpack('<LLLLHHLL', n_cell_pkt[0:28])
@@ -173,7 +173,7 @@ class DiagLteLogParser:
                 n_real_rssi = -110 + n_meas_rssi * 0.0625
                 n_real_rsrq = -30 + n_meas_rsrq * 0.0625
 
-                print('Radio {}: Neighbor cell {}: PCI {:3d}, RSRP {:.2f}, RSSI {:.2f}'.format(self.parent.sanitize_radio_id(radio_id), i, n_pci, n_real_rsrp, n_real_rssi))
+                #print('Radio {}: Neighbor cell {}: PCI {:3d}, RSRP {:.2f}, RSSI {:.2f}'.format(self.parent.sanitize_radio_id(radio_id), i, n_pci, n_real_rsrp, n_real_rssi))
         elif pkt[0] == 4: # Version 4
             # Version, RRC standard release, EARFCN, Q_rxlevmin, Num Cells, Cell Info
             # Cell Info - PCI, Measured RSSI, Measured RSRP, Average RSRP
@@ -185,7 +185,7 @@ class DiagLteLogParser:
             earfcn = pkt[4] | pkt[5] << 8
             q_rxlevmin = (pkt[6] | pkt[7] << 8) & 0x3f
             n_cells = (pkt[6] | pkt[7] << 8) >> 6
-            print('Radio {}: LTE NCell: # cells {}'.format(self.parent.sanitize_radio_id(radio_id), n_cells))
+            #print('Radio {}: LTE NCell: # cells {}'.format(self.parent.sanitize_radio_id(radio_id), n_cells))
             for i in range(n_cells):
                 n_cell_pkt = pkt[8 + 32 * i:8 + 32 * (i + 1)]
                 interim = struct.unpack('<LLLLHHLL', n_cell_pkt[0:28])
@@ -209,7 +209,7 @@ class DiagLteLogParser:
                 n_real_rssi = -110 + n_meas_rssi * 0.0625
                 n_real_rsrq = -30 + n_meas_rsrq * 0.0625
 
-                print('Radio {}: Neighbor cell {}: PCI {:3d}, RSRP {:.2f}, RSSI {:.2f}'.format(self.parent.sanitize_radio_id(radio_id), i, n_pci, n_real_rsrp, n_real_rssi))
+                #print('Radio {}: Neighbor cell {}: PCI {:3d}, RSRP {:.2f}, RSSI {:.2f}'.format(self.parent.sanitize_radio_id(radio_id), i, n_pci, n_real_rsrp, n_real_rssi))
         else:
             self.parent.logger.log(logging.WARNING, 'Radio {}: Unknown LTE ML1 Neighbor Meas packet version {}'.format(self.parent.sanitize_radio_id(radio_id), pkt[0]))
 
