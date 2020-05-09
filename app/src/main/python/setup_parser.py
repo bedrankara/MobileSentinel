@@ -27,10 +27,10 @@ def initiate_parsing():
     # Hardcoded values
     my_parser = parsers.QualcommParser()
     d = str(Environment.getExternalStorageDirectory());
-    filepath = os.path.join(d, 'test.qmdl')
+    filepath = os.path.join(d, 'premiumsimVolte.qmdl')
     print(filepath)
     io_device = iodevices.FileIO([str(filepath)])
     my_parser.set_io_device(io_device)
-    writer = writers.PcapWriter('test', GSMTAP_PORT, IP_OVER_UDP_PORT)
+    writer = writers.PcapWriter('premiumsimVolte', GSMTAP_PORT, IP_OVER_UDP_PORT)
     my_parser.set_writer(writer)
     my_parser.read_dump()
