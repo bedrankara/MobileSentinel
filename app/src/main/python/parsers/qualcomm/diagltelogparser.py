@@ -6,6 +6,16 @@ import util
 import struct
 import calendar, datetime
 import logging
+from binascii import unhexlify, hexlify
+
+try:
+    from .pycrate.pycrate_asn1dir import RRCLTE
+
+
+
+
+except ImportError as ie:
+    print(ie)
 
 class DiagLteLogParser:
     def __init__(self, parent):
@@ -1080,6 +1090,12 @@ class DiagLteLogParser:
             sub_slot = subfn,
             device_sec = ts_sec,
             device_usec = ts_usec)
+
+        # if str(rrc_subtype_map[subtype]) == "gsmtap_lte_rrc_types.DL_DCCH":
+        #     sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
+        #     sch.from_uper(unhexlify(msg_content.hex()))
+        #     print(sch.to_asn1())
+
 
         self.parent.writer.write_cp(gsmtap_hdr + msg_content, radio_id, pkt_ts)
 
