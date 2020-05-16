@@ -40,7 +40,6 @@ public class LogAdapter extends ArrayAdapter<LogPacket> implements View.OnClickL
         LogPacket logPacket = (LogPacket) object;
         switch (v.getId()) {
             case R.id.item_info:
-                System.out.println(logPacket.getPacketName());
                 Intent intent = new Intent(mContext, PacketViewerActivity.class);
                 intent.putExtra("content", logPacket.getPacketContent());
                 mContext.startActivity(intent);
