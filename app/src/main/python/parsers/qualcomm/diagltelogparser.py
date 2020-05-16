@@ -8,6 +8,7 @@ import util
 import struct
 import calendar, datetime
 import logging
+import json
 from binascii import unhexlify, hexlify
 
 try:
@@ -1099,7 +1100,16 @@ class DiagLteLogParser:
             sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
             sch.from_uper(unhexlify(msg_content.hex()))
             json_string = sch.to_json()
-            log_pkt = logPacket(str(rrc_subtype_map[subtype]), str(json_string))
+            data = json.loads(json_string)
+            #print(data['message']['c1'])
+            header_name = ""
+            for dt in data['message']['c1']:
+                header_name = str(dt)
+            if header_name is not None:
+                log_pkt = logPacket(header_name, str(json_string))
+            else:
+                log_pkt = logPacket(str(rrc_subtype_map[subtype]), str(json_string))
+
             self.packet_list.add(log_pkt)
 
 
