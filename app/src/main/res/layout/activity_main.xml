@@ -20,8 +20,8 @@
 
     <ListView
         android:id="@+id/listView"
-        android:layout_width="343dp"
-        android:layout_height="506dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         app:layout_constraintBottom_toBottomOf="@+id/testButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
