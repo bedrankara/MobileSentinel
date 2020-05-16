@@ -7,6 +7,7 @@ import parsers
 
 import subprocess
 from android.os import Environment
+
 import string
 
 
@@ -22,10 +23,10 @@ import logging
 GSMTAP_PORT = 4729
 IP_OVER_UDP_PORT = 47290
 
-def initiate_parsing():
+def initiate_parsing(packet_list):
 
     # Hardcoded values
-    my_parser = parsers.QualcommParser()
+    my_parser = parsers.QualcommParser(packet_list)
     d = str(Environment.getExternalStorageDirectory());
     filepath = os.path.join(d, 'premiumsimVolte.qmdl')
     print(filepath)
