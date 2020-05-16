@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from . import diagcmd
+from com.bedrankarakoc.mobilesentinel import LogPacket as logPacket
+
 import util
 
 import struct
@@ -18,8 +20,9 @@ except ImportError as ie:
     print(ie)
 
 class DiagLteLogParser:
-    def __init__(self, parent):
+    def __init__(self, parent, packet_list):
         self.parent = parent
+        self.packet_list = packet_list
 
         self.no_process = {
             0xB061: 'LTE MAC RACH Trigger',
@@ -1091,10 +1094,13 @@ class DiagLteLogParser:
             device_sec = ts_sec,
             device_usec = ts_usec)
 
-        # if str(rrc_subtype_map[subtype]) == "gsmtap_lte_rrc_types.DL_DCCH":
-        #     sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
-        #     sch.from_uper(unhexlify(msg_content.hex()))
-        #     print(sch.to_asn1())
+        #TODO: Add support for other subtypes
+        if str(rrc_subtype_map[subtype]) == "gsmtap_lte_rrc_types.DL_DCCH":
+            sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
+            sch.from_uper(unhexlify(msg_content.hex()))
+            json_string = sch.to_json()
+            log_pkt = logPacket(str(rrc_subtype_map[subtype]), str(json_string))
+            self.packet_list.add(log_pkt)
 
 
         self.parent.writer.write_cp(gsmtap_hdr + msg_content, radio_id, pkt_ts)

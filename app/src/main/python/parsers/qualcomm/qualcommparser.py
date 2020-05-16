@@ -21,7 +21,7 @@ import calendar, datetime
 import logging
 
 class QualcommParser:
-    def __init__(self):
+    def __init__(self, packet_list):
         self.gsm_last_cell_id = [0, 0]
         self.gsm_last_arfcn = [0, 0]
 
@@ -49,12 +49,13 @@ class QualcommParser:
 
         self.name = 'qualcomm'
         self.shortname = 'qc'
+        self.packet_list = packet_list
 
         self.logger = logging.getLogger('scat.qualcommparser')
 
         self.diag_log_parsers = [DiagGsmLogParser(self),
             DiagWcdmaLogParser(self), DiagUmtsLogParser(self),
-            DiagLteLogParser(self), Diag1xLogParser(self)]
+            DiagLteLogParser(self, packet_list), Diag1xLogParser(self)]
 
         self.process = { }
         self.no_process = { }
