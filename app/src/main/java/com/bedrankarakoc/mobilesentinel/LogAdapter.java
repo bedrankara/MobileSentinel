@@ -1,6 +1,7 @@
 package com.bedrankarakoc.mobilesentinel;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,8 @@ public class LogAdapter extends ArrayAdapter<LogPacket> implements View.OnClickL
     Context mContext;
 
 
-    // View lookup cache
     private static class ViewHolder {
         TextView txtName;
-        TextView txtType;
-        TextView txtVersion;
         ImageView info;
     }
 
@@ -29,25 +27,37 @@ public class LogAdapter extends ArrayAdapter<LogPacket> implements View.OnClickL
         super(context, R.layout.row_packet, data);
         this.dataSet = data;
         this.mContext = context;
+
+
     }
 
 
     @Override
     public void onClick(View v) {
-        System.out.println(v.getId());
+
+        int position = (Integer) v.getTag();
+        Object object = getItem(position);
+        LogPacket logPacket = (LogPacket) object;
+        switch (v.getId()) {
+            case R.id.item_info:
+                System.out.println(logPacket.getPacketName());
+                Intent intent = new Intent(mContext, PacketViewerActivity.class);
+                intent.putExtra("content", logPacket.getPacketContent());
+                mContext.startActivity(intent);
+
+                break;
+        }
 
     }
 
 
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
-        LogPacket logPacket = getItem(position);
-        // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder; // view lookup cache stored in tag
 
-        final View result;
+        LogPacket logPacket = getItem(position);
+
+        ViewHolder viewHolder;
+
 
         if (convertView == null) {
 
@@ -55,21 +65,20 @@ public class LogAdapter extends ArrayAdapter<LogPacket> implements View.OnClickL
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_packet, parent, false);
             viewHolder.info = (ImageView) convertView.findViewById(R.id.item_info);
+            viewHolder.txtName = (TextView) convertView.findViewById(R.id.version_heading);
 
-            result = convertView;
 
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
-            result = convertView;
         }
-
-
 
 
         viewHolder.info.setOnClickListener(this);
         viewHolder.info.setTag(position);
-        // Return the completed view to render on screen
+        assert logPacket != null;
+        viewHolder.txtName.setText(logPacket.getPacketName());
+
         return convertView;
     }
 }
