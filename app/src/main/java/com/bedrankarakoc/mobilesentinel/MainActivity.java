@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -17,7 +18,10 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -61,10 +65,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+                final String filename = sdf.format(new Date());
+
                 Python py = Python.getInstance();
                 PyObject pyf = py.getModule("setup_parser");
-                PyObject obj = pyf.callAttr("initiate_parsing", packetList);
+                pyf.callAttr("initiate_logging",filename);
+
+                File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
+                System.out.println(baseDir);
+
+                // TODO: Dirty
+                String qmdlFilename = "";
+
+                for (File f : baseDir.listFiles()) {
+                    if (f.getName().endsWith(".qmdl")) {
+                        qmdlFilename = f.getName();
+                    }
+                }
+
+                pyf.callAttr("initiate_parsing", packetList,filename,qmdlFilename);
                 listView.setAdapter(adapter);
+
 
 
             }
