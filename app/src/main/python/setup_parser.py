@@ -27,22 +27,17 @@ IP_OVER_UDP_PORT = 47290
 def thread_logging(filename):
     print(subprocess.check_output(['su','-c', 'mkdir /data/media/0/logs/'+filename]))
     print(subprocess.check_output(['su','-c', 'chmod 777 /data/media/0/logs/'+filename]))
-    print(subprocess.check_output(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/Diag.cfg -o /data/media/0/logs/'+filename]))
-    print("threadded logging started")
-    cmd = "diag_mdlog -f /data/media/0/logs/Diag.cfg -o /data/media/0/logs"
-    MyOut = subprocess.Popen(['su','-c','diag_mdlog -f /data/media/0/logs/Diag.cfg -o /data/media/0/logs'],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
-    stdout,stderr = MyOut.communicate()
-    print(stdout)
-    print(stderr)
-    print("thread logging ending")
+    print(subprocess.check_output(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/full_diag -o /data/media/0/logs/'+filename]))
+    # p = subprocess.Popen(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/full_diag -o /data/media/0/logs/'+filename], stdout=subprocess.PIPE)
+    # out = p.stdout.read()
+    # print(out)
+
+
 
 def initiate_logging(filename):
     x = threading.Thread(target=thread_logging, args=(filename,))
     x.start()
     time.sleep(30)
-    print("stopping")
     print(subprocess.check_output(['su','-c','diag_mdlog -k']))
 
 
