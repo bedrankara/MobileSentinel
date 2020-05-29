@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         File f = new File(filename);
         try {
             OutputStream out = new FileOutputStream(new File(sdcard+configDir, filename));
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4096*2];
             int len;
             while((len = inputStream.read(buffer, 0, buffer.length)) != -1){
                 out.write(buffer, 0, len);
