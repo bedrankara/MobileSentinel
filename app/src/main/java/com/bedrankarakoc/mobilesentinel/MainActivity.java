@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         InputStream inputStream = mContext.getResources().openRawResource(R.raw.full_diag);
         String filename = mContext.getResources().getResourceEntryName(R.raw.full_diag);
 
-        File f = new File(filename);
+        File f = new File(filename + ".cfg");
         try {
             OutputStream out = new FileOutputStream(new File(sdcard+configDir, filename));
             byte[] buffer = new byte[4096*2];
