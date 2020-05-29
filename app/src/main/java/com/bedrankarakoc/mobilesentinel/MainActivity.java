@@ -19,6 +19,11 @@ import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,10 +31,11 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    // Setup
     ArrayList<LogPacket> packetList;
     private static LogAdapter adapter;
-
+    Context mContext;
+    private File sdcard;
     // UI Elements
     private Button testButton;
     private ListView listView;
@@ -45,14 +51,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestPermissions(permissions, requestCode);
         stopLoggingButtonListener();
-
+        mContext = getApplicationContext();
+        sdcard = Environment.getExternalStorageDirectory();
+        System.out.println(sdcard);
         listView = (ListView) findViewById(R.id.listView);
         packetList = new ArrayList<>();
         adapter = new LogAdapter(packetList, MainActivity.this);
         listView.setAdapter(adapter);
+        createConfig();
 
         if (!Python.isStarted())
             Python.start(new AndroidPlatform(this));
+
+
 
 
     }
@@ -91,6 +102,31 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+    }
+
+    // Create logging config files (from raw resources) to external storage
+    public void createConfig() {
+        String configDir = "/logs";
+        InputStream inputStream = mContext.getResources().openRawResource(R.raw.full_diag);
+        String filename = mContext.getResources().getResourceEntryName(R.raw.full_diag);
+
+        File f = new File(filename);
+        try {
+            OutputStream out = new FileOutputStream(new File(sdcard+configDir, filename));
+            byte[] buffer = new byte[1024];
+            int len;
+            while((len = inputStream.read(buffer, 0, buffer.length)) != -1){
+                out.write(buffer, 0, len);
+            }
+            inputStream.close();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
