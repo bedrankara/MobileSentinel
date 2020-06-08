@@ -10,14 +10,20 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+
 public class HomeBottomBar extends AppCompatActivity {
+
+
+    // Permissions
+    private String[] permissions = {"android.permissions.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permissions.READ_PHONE_STATE"};
+    private int requestCode = 1337;
 
     Fragment homeFragment = new HomeFragment();
     Fragment detectionFragment = new DetectionFragment();
     Fragment loggingFragment = new LoggingFragment();
     Fragment settingsFragment = new SettingsFragment();
     Fragment active = homeFragment;
-    FragmentManager fm = getSupportFragmentManager();
+    FragmentManager fragmentManager = getSupportFragmentManager();
 
 
     @Override
@@ -28,17 +34,13 @@ public class HomeBottomBar extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
 
-        fm.beginTransaction().add(R.id.fragment_container, settingsFragment, "4").hide(settingsFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, loggingFragment, "3").hide(loggingFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, detectionFragment, "2").hide(detectionFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, homeFragment, "1").commit();
-        /*//I added this if statement to keep the selected fragment when rotating the device
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    homeFragment).commit();
+        requestPermissions(permissions, requestCode);
 
-        }
-*/
+        fragmentManager.beginTransaction().add(R.id.fragment_container, settingsFragment, "4").hide(settingsFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, loggingFragment, "3").hide(loggingFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, detectionFragment, "2").hide(detectionFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, homeFragment, "1").commit();
+
     }
 
     @Override
@@ -55,21 +57,21 @@ public class HomeBottomBar extends AppCompatActivity {
                     switch (item.getItemId()) {
                         case R.id.nav_home:
 
-                            fm.beginTransaction().hide(active).show(homeFragment).commit();
+                            fragmentManager.beginTransaction().hide(active).show(homeFragment).commit();
                             active = homeFragment;
                             return true;
                         case R.id.nav_detection:
 
-                            fm.beginTransaction().hide(active).show(detectionFragment).commit();
+                            fragmentManager.beginTransaction().hide(active).show(detectionFragment).commit();
                             active = detectionFragment;
                             return true;
                         case R.id.nav_logging:
 
-                            fm.beginTransaction().hide(active).show(loggingFragment).commit();
+                            fragmentManager.beginTransaction().hide(active).show(loggingFragment).commit();
                             active = loggingFragment;
                             return true;
                         case R.id.nav_settings:
-                            fm.beginTransaction().hide(active).show(settingsFragment).commit();
+                            fragmentManager.beginTransaction().hide(active).show(settingsFragment).commit();
                             active = settingsFragment;
                             return true;
 
