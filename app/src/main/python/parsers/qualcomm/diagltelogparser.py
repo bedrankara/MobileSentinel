@@ -3,6 +3,7 @@
 from . import diagcmd
 from com.bedrankarakoc.mobilesentinel import LogPacket as logPacket
 
+from PacketArrayWriter import PacketArrayWriter
 import util
 
 import struct
@@ -11,18 +12,11 @@ import logging
 import json
 from binascii import unhexlify, hexlify
 
-try:
-    from .pycrate.pycrate_asn1dir import RRCLTE
-
-
-
-
-except ImportError as ie:
-    print(ie)
 
 class DiagLteLogParser:
     def __init__(self, parent, packet_list):
         self.parent = parent
+        self.packetArrayWriter = PacketArrayWriter(packet_list)
         self.packet_list = packet_list
 
         self.no_process = {
@@ -1095,24 +1089,7 @@ class DiagLteLogParser:
             device_sec = ts_sec,
             device_usec = ts_usec)
 
-        #TODO: Add support for other subtypes
-        if str(rrc_subtype_map[subtype]) == "gsmtap_lte_rrc_types.DL_DCCH":
-            sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
-            sch.from_uper(unhexlify(msg_content.hex()))
-            json_string = sch.to_json()
-            data = json.loads(json_string)
-
-            msg_name = ""
-            for iter in data['message']['c1']:
-                msg_name = str(iter)
-            if msg_name is not None:
-                log_pkt = logPacket(msg_name, str(json_string))
-            else:
-                log_pkt = logPacket(str(rrc_subtype_map[subtype]), str(json_string))
-
-            self.packet_list.add(log_pkt)
-
-
+        self.packetArrayWriter.append_packet(rrc_subtype_map[subtype], msg_content.hex())
         self.parent.writer.write_cp(gsmtap_hdr + msg_content, radio_id, pkt_ts)
 
     def parse_lte_nas(self, pkt_ts, pkt, radio_id, plain = False):
