@@ -3,9 +3,10 @@
 from . import diagcmd
 from com.bedrankarakoc.mobilesentinel import LogPacket as logPacket
 
+from statemachine.detection_handler import Detection
+from statemachine import detection_handler
 from PacketArrayWriter import PacketArrayWriter
 import util
-
 import struct
 import calendar, datetime
 import logging
@@ -18,6 +19,7 @@ class DiagLteLogParser:
         self.parent = parent
         self.packetArrayWriter = PacketArrayWriter(packet_list)
         self.packet_list = packet_list
+        self.detection_handler = Detection()
 
         self.no_process = {
             0xB061: 'LTE MAC RACH Trigger',
@@ -1090,6 +1092,8 @@ class DiagLteLogParser:
             device_usec = ts_usec)
 
         self.packetArrayWriter.append_packet(rrc_subtype_map[subtype], msg_content.hex())
+        self.detection_handler.on_event(rrc_subtype_map[subtype], msg_content.hex())
+
         self.parent.writer.write_cp(gsmtap_hdr + msg_content, radio_id, pkt_ts)
 
     def parse_lte_nas(self, pkt_ts, pkt, radio_id, plain = False):
