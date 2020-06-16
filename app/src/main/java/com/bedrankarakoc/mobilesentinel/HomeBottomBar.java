@@ -17,7 +17,7 @@ public class HomeBottomBar extends AppCompatActivity {
 
     // Permissions
     private String[] permissions = {"android.permissions.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permissions.READ_PHONE_STATE", "android.permission.ACCESS_COARSE_LOCATION"
-    , "android.permission.ACCESS_COARSE_UPDATES"};
+    , "android.permission.ACCESS_COARSE_UPDATES", "android.permission.ACCESS_FINE_LOCATION"};
     private int requestCode = 1337;
 
     Fragment homeFragment = new HomeFragment();
