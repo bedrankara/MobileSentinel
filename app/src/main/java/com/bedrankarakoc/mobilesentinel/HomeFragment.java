@@ -89,6 +89,7 @@ public class HomeFragment extends Fragment {
             baseStation.setMcc(cellIdentityWcdma.getMcc());
             baseStation.setMnc(cellIdentityWcdma.getMnc());
             baseStation.setBsic_psc_pci(cellIdentityWcdma.getPsc());
+            baseStation.setArfcn(cellIdentityWcdma.getUarfcn());
             if (cellInfoWcdma.getCellSignalStrength() != null) {
                 baseStation.setAsuLevel(cellInfoWcdma.getCellSignalStrength().getAsuLevel()); //Get the signal level as an asu value between 0..31, 99 is unknown Asu is calculated based on 3GPP RSRP.
                 baseStation.setSignalLevel(cellInfoWcdma.getCellSignalStrength().getLevel()); //Get signal level as an int from 0..4
@@ -106,6 +107,7 @@ public class HomeFragment extends Fragment {
             baseStation.setMcc(cellIdentityLte.getMcc());
             baseStation.setLac(cellIdentityLte.getTac());
             baseStation.setBsic_psc_pci(cellIdentityLte.getPci());
+            baseStation.setArfcn(cellIdentityLte.getEarfcn());
 
             if (cellInfoLte.getCellSignalStrength() != null) {
                 baseStation.setAsuLevel(cellInfoLte.getCellSignalStrength().getAsuLevel());
@@ -123,6 +125,7 @@ public class HomeFragment extends Fragment {
             baseStation.setMcc(cellIdentityGsm.getMcc());
             baseStation.setMnc(cellIdentityGsm.getMnc());
             baseStation.setBsic_psc_pci(cellIdentityGsm.getPsc());
+            baseStation.setArfcn(cellIdentityGsm.getArfcn());
             if (cellInfoGsm.getCellSignalStrength() != null) {
                 baseStation.setAsuLevel(cellInfoGsm.getCellSignalStrength().getAsuLevel());
                 baseStation.setSignalLevel(cellInfoGsm.getCellSignalStrength().getLevel());
