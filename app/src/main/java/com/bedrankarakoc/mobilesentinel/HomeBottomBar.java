@@ -9,13 +9,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+//Debug
 
 
 public class HomeBottomBar extends AppCompatActivity {
 
 
     // Permissions
-    private String[] permissions = {"android.permissions.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permissions.READ_PHONE_STATE"};
+    private String[] permissions = {"android.permissions.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permissions.READ_PHONE_STATE", "android.permission.ACCESS_COARSE_LOCATION"
+    , "android.permission.ACCESS_COARSE_UPDATES"};
     private int requestCode = 1337;
 
     Fragment homeFragment = new HomeFragment();
