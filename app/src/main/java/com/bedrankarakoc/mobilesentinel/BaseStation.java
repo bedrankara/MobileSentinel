@@ -2,9 +2,9 @@ package com.bedrankarakoc.mobilesentinel;
 
 public class BaseStation {
 
-    private int mcc;            // Mobile Country Code
+    private String mcc;            // Mobile Country Code
 
-    private int mnc;            // Mobile Network Code
+    private String mnc;            // Mobile Network Code
 
     private int lac;            // Location Area Code or TAC(Tracking Area Code) for LTE
 
@@ -33,19 +33,19 @@ public class BaseStation {
     private String type;        // Signal type, GSM or WCDMA or LTE or CDMA
 
     // Getter and Setter for all fields
-    public int getMcc() {
+    public String getMcc() {
         return mcc;
     }
 
-    public void setMcc(int mcc) {
+    public void setMcc(String mcc) {
         this.mcc = mcc;
     }
 
-    public int getMnc() {
+    public String getMnc() {
         return mnc;
     }
 
-    public void setMnc(int mnc) {
+    public void setMnc(String mnc) {
         this.mnc = mnc;
     }
 

@@ -2,7 +2,9 @@ package com.bedrankarakoc.mobilesentinel;
 
 import com.bedrankarakoc.mobilesentinel.BaseStation;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellIdentityLte;
@@ -11,6 +13,8 @@ import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import java.util.List;
@@ -28,10 +33,12 @@ public class HomeFragment extends Fragment {
     private TelephonyManager telephonyManager;
 
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view =  inflater.inflate(R.layout.home_fragment, container, false);
+        view = inflater.inflate(R.layout.home_fragment, container, false);
         return view;
     }
 
@@ -39,6 +46,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         telephonyManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+
     }
 
     @Override
@@ -86,8 +94,8 @@ public class HomeFragment extends Fragment {
             baseStation.setType("WCDMA");
             baseStation.setCid(cellIdentityWcdma.getCid());
             baseStation.setLac(cellIdentityWcdma.getLac());
-            baseStation.setMcc(cellIdentityWcdma.getMcc());
-            baseStation.setMnc(cellIdentityWcdma.getMnc());
+            baseStation.setMcc(cellIdentityWcdma.getMccString());
+            baseStation.setMnc(cellIdentityWcdma.getMncString());
             baseStation.setBsic_psc_pci(cellIdentityWcdma.getPsc());
             baseStation.setArfcn(cellIdentityWcdma.getUarfcn());
             if (cellInfoWcdma.getCellSignalStrength() != null) {
@@ -103,8 +111,8 @@ public class HomeFragment extends Fragment {
             baseStation = new BaseStation();
             baseStation.setType("LTE");
             baseStation.setCid(cellIdentityLte.getCi());
-            baseStation.setMnc(cellIdentityLte.getMnc());
-            baseStation.setMcc(cellIdentityLte.getMcc());
+            baseStation.setMnc(cellIdentityLte.getMncString());
+            baseStation.setMcc(cellIdentityLte.getMccString());
             baseStation.setLac(cellIdentityLte.getTac());
             baseStation.setBsic_psc_pci(cellIdentityLte.getPci());
             baseStation.setArfcn(cellIdentityLte.getEarfcn());
@@ -122,8 +130,8 @@ public class HomeFragment extends Fragment {
             baseStation.setType("GSM");
             baseStation.setCid(cellIdentityGsm.getCid());
             baseStation.setLac(cellIdentityGsm.getLac());
-            baseStation.setMcc(cellIdentityGsm.getMcc());
-            baseStation.setMnc(cellIdentityGsm.getMnc());
+            baseStation.setMcc(cellIdentityGsm.getMccString());
+            baseStation.setMnc(cellIdentityGsm.getMncString())
             baseStation.setBsic_psc_pci(cellIdentityGsm.getPsc());
             baseStation.setArfcn(cellIdentityGsm.getArfcn());
             if (cellInfoGsm.getCellSignalStrength() != null) {
