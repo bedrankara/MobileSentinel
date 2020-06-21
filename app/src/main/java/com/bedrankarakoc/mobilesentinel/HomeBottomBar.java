@@ -2,11 +2,11 @@ package com.bedrankarakoc.mobilesentinel;
 
 import android.content.Context;
 import android.os.Bundle;
-<<<<<<< Updated upstream
+
 import android.text.Html;
-=======
+
 import android.os.Environment;
->>>>>>> Stashed changes
+
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -18,16 +18,16 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-<<<<<<< Updated upstream
+
 import org.w3c.dom.Text;
-=======
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
->>>>>>> Stashed changes
+
 //Debug
 
 
@@ -121,11 +121,10 @@ public class HomeBottomBar extends AppCompatActivity {
                 }
             };
 
-<<<<<<< Updated upstream
 
 
 
-=======
+
     // Create logging config files (from raw resources) to external storage
     public void createConfig() {
         String configDir = "/logs";
@@ -151,5 +150,5 @@ public class HomeBottomBar extends AppCompatActivity {
 
     }
 
->>>>>>> Stashed changes
+
 }
