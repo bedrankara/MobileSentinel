@@ -61,7 +61,6 @@ public class LoggingFragment extends Fragment {
         packetList = new ArrayList<>();
         adapter = new LogAdapter(packetList, mContext);
         listView.setAdapter(adapter);
-        createConfig();
         return view;
     }
 
@@ -93,6 +92,7 @@ public class LoggingFragment extends Fragment {
                 }
 
                 pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename);
+                //TODO: Update listview live
                 listView.setAdapter(adapter);
 
 
@@ -102,28 +102,4 @@ public class LoggingFragment extends Fragment {
 
     }
 
-    // Create logging config files (from raw resources) to external storage
-    public void createConfig() {
-        String configDir = "/logs";
-        InputStream inputStream = mContext.getResources().openRawResource(R.raw.full_diag);
-        String filename = mContext.getResources().getResourceEntryName(R.raw.full_diag);
-
-        File f = new File(filename + ".cfg");
-        try {
-            OutputStream out = new FileOutputStream(new File(sdcard + configDir, filename));
-            byte[] buffer = new byte[4096 * 2];
-            int len;
-            while ((len = inputStream.read(buffer, 0, buffer.length)) != -1) {
-                out.write(buffer, 0, len);
-            }
-            inputStream.close();
-            out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
 }

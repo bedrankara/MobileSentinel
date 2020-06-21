@@ -1,7 +1,12 @@
 package com.bedrankarakoc.mobilesentinel;
 
+import android.content.Context;
 import android.os.Bundle;
+<<<<<<< Updated upstream
 import android.text.Html;
+=======
+import android.os.Environment;
+>>>>>>> Stashed changes
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -13,7 +18,16 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+<<<<<<< Updated upstream
 import org.w3c.dom.Text;
+=======
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+>>>>>>> Stashed changes
 //Debug
 
 
@@ -24,6 +38,9 @@ public class HomeBottomBar extends AppCompatActivity {
     private String[] permissions = {"android.permissions.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permissions.READ_PHONE_STATE", "android.permission.ACCESS_COARSE_LOCATION"
     , "android.permission.ACCESS_COARSE_UPDATES", "android.permission.ACCESS_FINE_LOCATION"};
     private int requestCode = 1337;
+    private Context mContext;
+    private File sdcard;
+
 
     TextView actionBarText;
 
@@ -42,9 +59,12 @@ public class HomeBottomBar extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
+        mContext = getApplicationContext();
+        sdcard = Environment.getExternalStorageDirectory();
 
 
         requestPermissions(permissions, requestCode);
+        createConfig();
 
         //getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#ff8700\">" + getString(R.string.app_name) + "</font>"));
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -101,7 +121,35 @@ public class HomeBottomBar extends AppCompatActivity {
                 }
             };
 
+<<<<<<< Updated upstream
 
 
 
+=======
+    // Create logging config files (from raw resources) to external storage
+    public void createConfig() {
+        String configDir = "/logs";
+        InputStream inputStream = mContext.getResources().openRawResource(R.raw.full_diag);
+        String filename = mContext.getResources().getResourceEntryName(R.raw.full_diag);
+
+        File f = new File(filename + ".cfg");
+        try {
+            OutputStream out = new FileOutputStream(new File(sdcard + configDir, filename));
+            byte[] buffer = new byte[4096 * 2];
+            int len;
+            while ((len = inputStream.read(buffer, 0, buffer.length)) != -1) {
+                out.write(buffer, 0, len);
+            }
+            inputStream.close();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+>>>>>>> Stashed changes
 }

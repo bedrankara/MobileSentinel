@@ -31,6 +31,7 @@ class DrbIdState(State):
     def on_event(self, rrc_subtype, msg):
         if str(rrc_subtype) != "gsmtap_lte_rrc_types.DL_DCCH":
             return DrbIdState()
+        #TODO: Only checked on r8 (there might be possibly more revisions)
 
         sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
         sch.from_uper(unhexlify(msg))
