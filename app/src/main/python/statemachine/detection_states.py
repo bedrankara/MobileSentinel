@@ -8,22 +8,13 @@ import string
 class InitState(State):
 
     def on_event(self, rrc_subtype, msg):
-        if str(rrc_subtype) != "gsmtap_lte_rrc_types.DL_DCCH":
-            return InitState()
-        sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
-        sch.from_uper(unhexlify(msg))
-        json_string = sch.to_json()
-        data = json.loads(json_string)
-
-        for iter in data['message']['c1']:
-            print(iter)
 
         try:
             if 'radioResourceConfigDedicated' in \
-                    data['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions'][
+                    msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions'][
                         'c1']['rrcConnectionReconfiguration-r8']:
                 for iter in \
-                data['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions']['c1'][
+                msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions']['c1'][
                     'rrcConnectionReconfiguration-r8']['radioResourceConfigDedicated'][
                     'drb-ToReleaseList']:
                     print("First drb release received")
