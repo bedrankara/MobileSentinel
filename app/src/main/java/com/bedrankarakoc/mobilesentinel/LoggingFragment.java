@@ -28,8 +28,10 @@ import java.util.Date;
 
 public class LoggingFragment extends Fragment {
 
-    private Button testButton;
+    private Button startLoggingButton;
+    private Button stopLoggingButton;
     private ListView listView;
+    private String filename;
 
     // Setup
     ArrayList<LogPacket> packetList;
@@ -45,6 +47,7 @@ public class LoggingFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
+
     }
 
     @Nullable
@@ -52,6 +55,9 @@ public class LoggingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.logging_fragment, container, false);
         listView = (ListView) view.findViewById(R.id.listView);
+        startLoggingButton = (Button) view.findViewById(R.id.start_logging_button);
+        stopLoggingButton = (Button) view.findViewById(R.id.stop_logging_button);
+        startLoggingButtonListener();
         stopLoggingButtonListener();
         mContext = getActivity();
         sdcard = Environment.getExternalStorageDirectory();
@@ -65,41 +71,72 @@ public class LoggingFragment extends Fragment {
     }
 
 
-    public void stopLoggingButtonListener() {
-        testButton = (Button) view.findViewById(R.id.testButton);
+    public void startLoggingButtonListener() {
 
-        testButton.setOnClickListener(new View.OnClickListener() {
+
+        startLoggingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-                final String filename = sdf.format(new Date());
+                filename = sdf.format(new Date());
 
                 Python py = Python.getInstance();
                 PyObject pyf = py.getModule("setup_parser");
-                pyf.callAttr("initiate_logging", filename);
+                pyf.callAttr("start_logging", filename);
 
-                File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
-                System.out.println(baseDir);
 
-                // TODO: Dirty
-                String qmdlFilename = "";
-
-                for (File f : baseDir.listFiles()) {
-                    if (f.getName().endsWith(".qmdl")) {
-                        qmdlFilename = f.getName();
-                    }
-                }
-
-                pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename);
-                //TODO: Update listview live
-                listView.setAdapter(adapter);
 
 
             }
         });
 
 
+    }
+
+    public void stopLoggingButtonListener() {
+
+        stopLoggingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        System.out.println("Reached onclick");
+                        Python py = Python.getInstance();
+                        PyObject pyf = py.getModule("setup_parser");
+                        pyf.callAttr("stop_logging");
+
+                        File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
+                        System.out.println(baseDir);
+
+                        // TODO: Dirty
+                        String qmdlFilename = "";
+
+                        for (File f : baseDir.listFiles()) {
+                            if (f.getName().endsWith(".qmdl")) {
+                                qmdlFilename = f.getName();
+                            }
+                        }
+                        pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listView.setAdapter(adapter);
+                                System.out.println("Packets updated");
+                            }
+                        });
+
+                    }
+                }
+
+                ).start();
+
+
+            }
+        });
     }
 
 }
