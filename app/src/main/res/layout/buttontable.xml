@@ -12,21 +12,22 @@
         >
 
         <Button
-
+            android:id="@+id/start_detection_button"
             android:layout_width="100dp"
             android:layout_height="50dp"
 
             android:background="@drawable/testbutton"
 
-            android:text="BUTTON"
+            android:text="Start Detection"
             android:textColor="@android:color/black" />
 
         <Button
+            android:id="@+id/stop_detection_button"
             android:layout_width="100dp"
             android:layout_height="50dp"
 
             android:background="@drawable/testbutton"
-            android:text="BUTTON"
+            android:text="Abort"
             android:textColor="@android:color/black" />
     </TableRow>
 
