@@ -5,6 +5,8 @@ import com.bedrankarakoc.mobilesentinel.BaseStation;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellIdentityLte;
@@ -25,12 +27,14 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import java.net.NetworkInterface;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     View view;
     private TelephonyManager telephonyManager;
+    Context mContext;
 
 
 
@@ -46,6 +50,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         telephonyManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+        mContext = getActivity();
 
     }
 
@@ -53,13 +58,19 @@ public class HomeFragment extends Fragment {
     public void onStart() {
         super.onStart();
         showCellinfo(view);
+        System.out.println(telephonyManager.getNetworkType());
+
     }
 
 
     public void showCellinfo(View view) {
         TextView cellInfoView = view.findViewById(R.id.cellInfoView);
         List<CellInfo> cellInfoList = null;
+
         try {
+            // getAllCellInfo() does not work on Exynos chipsets. Right now Qualcomm appears to be the only one working
+            // cellInfoList[0] is the current serving cell and returned all values correctly.
+            // All other measured neighbor cells do not return their proper MCC, MNC, LAC values. Cause unknown.
             cellInfoList = telephonyManager.getAllCellInfo();
         } catch (SecurityException e) {
             e.printStackTrace();
