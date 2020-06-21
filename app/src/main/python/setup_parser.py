@@ -24,29 +24,17 @@ import logging
 GSMTAP_PORT = 4729
 IP_OVER_UDP_PORT = 47290
 
-def thread_logging(filename):
 
+def start_logging(filename):
     print(subprocess.check_output(['su','-c', 'mkdir /data/media/0/logs/'+filename]))
     print(subprocess.check_output(['su','-c', 'chmod 777 /data/media/0/logs/'+filename]))
-    #TODO: Queue dumps and parse correctly
-    #TODO: Check if packets are being dropped once a new dump is started
-    print(subprocess.check_output(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/full_diag -o /data/media/0/logs/'+filename]))
-    # p = subprocess.Popen(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/full_diag -o /data/media/0/logs/'+filename], stdout=subprocess.PIPE)
-    # out = p.stdout.read()
-    # print(out)
+    subprocess.Popen(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/full_diag -o /data/media/0/logs/'+filename])
+    print("Mdlog is running")
 
-
-
-def initiate_logging(filename):
-    x = threading.Thread(target=thread_logging, args=(filename,))
-    x.start()
-    time.sleep(360)
-    print(subprocess.check_output(['su','-c','diag_mdlog -k']))
-
-
-
-
-
+def stop_logging():
+    subprocess.Popen(['su','-c','diag_mdlog -k'])
+    #print(subprocess.check_output(['su','-c','diag_mdlog -k']))
+    print("Mdlog is stopped")
 
 def initiate_parsing(packet_list,dump_directory,dump_filename):
 
