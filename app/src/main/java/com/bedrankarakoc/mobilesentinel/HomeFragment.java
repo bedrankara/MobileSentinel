@@ -131,7 +131,7 @@ public class HomeFragment extends Fragment {
             baseStation.setCid(cellIdentityGsm.getCid());
             baseStation.setLac(cellIdentityGsm.getLac());
             baseStation.setMcc(cellIdentityGsm.getMccString());
-            baseStation.setMnc(cellIdentityGsm.getMncString())
+            baseStation.setMnc(cellIdentityGsm.getMncString());
             baseStation.setBsic_psc_pci(cellIdentityGsm.getPsc());
             baseStation.setArfcn(cellIdentityGsm.getArfcn());
             if (cellInfoGsm.getCellSignalStrength() != null) {
