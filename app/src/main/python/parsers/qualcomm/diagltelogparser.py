@@ -1092,7 +1092,7 @@ class DiagLteLogParser:
             device_usec = ts_usec)
 
         self.packetArrayWriter.append_packet(rrc_subtype_map[subtype], msg_content.hex())
-        self.detection_handler.on_event(rrc_subtype_map[subtype], msg_content.hex())
+        #self.detection_handler.on_event(rrc_subtype_map[subtype], msg_content.hex())
 
         self.parent.writer.write_cp(gsmtap_hdr + msg_content, radio_id, pkt_ts)
 

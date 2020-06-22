@@ -11,7 +11,7 @@ class Detection(object):
 
     def check_packet(self, rrc_subtype, msg):
 
-        if str(rrc_subtype) != "gsmtap_lte_rrc_types.DL_DCCH":
+        if str(rrc_subtype) == "gsmtap_lte_rrc_types.DL_DCCH":
 
             sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
             sch.from_uper(unhexlify(msg))
