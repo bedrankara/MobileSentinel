@@ -34,7 +34,7 @@ public class HomeBottomBar extends AppCompatActivity {
 
     // Permissions
     private String[] permissions = {"android.permissions.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permissions.READ_PHONE_STATE", "android.permission.ACCESS_COARSE_LOCATION"
-    , "android.permission.ACCESS_COARSE_UPDATES", "android.permission.ACCESS_FINE_LOCATION"};
+    , "android.permission.ACCESS_COARSE_UPDATES", "android.permission.ACCESS_FINE_LOCATION", "android.permission.CALL_PHONE", "android.permission.ANSWER_PHONE_CALLS"};
     private int requestCode = 1337;
     private Context mContext;
     private File sdcard;
@@ -58,10 +58,8 @@ public class HomeBottomBar extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
         mContext = getApplicationContext();
-        sdcard = Environment.getExternalStorageDirectory();
-
-
         requestPermissions(permissions, requestCode);
+        sdcard = Environment.getExternalStorageDirectory();
         createConfig();
 
         //getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#ff8700\">" + getString(R.string.app_name) + "</font>"));
