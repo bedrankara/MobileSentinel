@@ -18,6 +18,7 @@ class Detection(object):
             json_string = sch.to_json()
             data = json.loads(json_string)
             if 'rrcConnectionReconfiguration' in data['message']['c1']:
+                #print("rrc reconf obtained")
                 return data
 
 
@@ -32,7 +33,7 @@ class Detection(object):
 
         parsed_msg = self.check_packet(rrc_subtype, msg)
         if parsed_msg is not None:
-            self.state = self.state.on_event(msg)
+            self.state = self.state.on_event(parsed_msg)
 
 
 
