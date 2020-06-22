@@ -7,7 +7,7 @@ import string
 
 class InitState(State):
 
-    def on_event(self, rrc_subtype, msg):
+    def on_event(self, msg):
 
         try:
             if 'radioResourceConfigDedicated' in \
@@ -15,25 +15,25 @@ class InitState(State):
                         'c1']['rrcConnectionReconfiguration-r8']:
                 if 'drb-ToReleaseList' in \
                         msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions'][
-                            'c1']['rrcConnectionReconfiguration-r8']:
-                    print("drb-ToReleaseList present")
+                            'c1']['rrcConnectionReconfiguration-r8']['radioResourceConfigDedicated']:
+                   # print("drb-ToReleaseList present")
                     for iter in \
                     msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions']['c1'][
                         'rrcConnectionReconfiguration-r8']['radioResourceConfigDedicated'][
                         'drb-ToReleaseList']:
 
-                        print("First drb release received")
+                        #print("First drb release received")
                         print(iter)
-                    return DrbIdState()
+                    return InitState()
 
-        except Exception:
-            print(Exception)
+        except KeyError as e:
+            print(e)
         return InitState()
 
 
 class DrbIdState(State):
 
-    def on_event(self, rrc_subtype, msg):
+    def on_event(self, msg):
         try:
             if 'radioResourceConfigDedicated' in \
                     msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions'][
@@ -47,10 +47,10 @@ class DrbIdState(State):
                                 'rrcConnectionReconfiguration-r8']['radioResourceConfigDedicated'][
                                 'drb-ToReleaseList']:
 
-                        print("First drb release received")
+                        print("DrbIDState")
                         print(iter)
                     return DrbIdState()
 
-        except Exception:
-            print(Exception)
+        except KeyError as e:
+            print(e)
         return DrbIdState()
