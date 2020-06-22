@@ -18,16 +18,7 @@ class Detection(object):
             json_string = sch.to_json()
             data = json.loads(json_string)
             if 'rrcConnectionReconfiguration' in data['message']['c1']:
-                #print("rrc reconf obtained")
                 return data
-
-
-
-
-
-
-
-
 
     def on_event(self, rrc_subtype, msg):
 

@@ -24,7 +24,7 @@ class InitState(State):
 
                         #print("First drb release received")
                         print(iter)
-                    return InitState()
+                    return DrbIdState()
 
         except KeyError as e:
             print(e)
@@ -38,18 +38,41 @@ class DrbIdState(State):
             if 'radioResourceConfigDedicated' in \
                     msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions'][
                         'c1']['rrcConnectionReconfiguration-r8']:
+                print("radioconfig present")
                 if 'drb-ToReleaseList' in \
                         msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions'][
-                            'c1']['rrcConnectionReconfiguration-r8']:
+                            'c1']['rrcConnectionReconfiguration-r8']['radioResourceConfigDedicated']:
                     print("drb-ToReleaseList present")
                     for iter in \
                             msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions']['c1'][
                                 'rrcConnectionReconfiguration-r8']['radioResourceConfigDedicated'][
                                 'drb-ToReleaseList']:
 
-                        print("DrbIDState")
+                        print("Additional DRB IDs obtained")
                         print(iter)
                     return DrbIdState()
+
+        except KeyError as e:
+            print(e)
+
+        try:
+            if 'securityConfigHO' in \
+                    msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions'][
+                        'c1']['rrcConnectionReconfiguration-r8']:
+                print("securityConfigHO present")
+                if 'handoverType' in \
+                        msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions'][
+                            'c1']['rrcConnectionReconfiguration-r8']['securityConfigHO']:
+                    print("handoverType present in securityConfigHO")
+                    for iter in \
+                            msg['message']['c1']['rrcConnectionReconfiguration']['criticalExtensions']['c1'][
+                                'rrcConnectionReconfiguration-r8']['securityConfigHO'][
+                                'handoverType']:
+
+                        print("HandoverType")
+                        print(iter)
+                    return DrbIdState()
+
 
         except KeyError as e:
             print(e)
