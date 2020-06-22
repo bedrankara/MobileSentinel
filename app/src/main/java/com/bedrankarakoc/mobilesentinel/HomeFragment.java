@@ -32,9 +32,9 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    View view;
+    private View view;
     private TelephonyManager telephonyManager;
-    Context mContext;
+    private Context mContext;
 
 
 
