@@ -104,7 +104,6 @@ public class LoggingFragment extends Fragment {
                     @Override
                     public void run() {
 
-                        System.out.println("Reached onclick");
                         Python py = Python.getInstance();
                         PyObject pyf = py.getModule("setup_parser");
                         pyf.callAttr("stop_logging");
