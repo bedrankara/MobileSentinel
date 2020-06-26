@@ -42,6 +42,7 @@ public class LogAdapter extends ArrayAdapter<LogPacket> implements View.OnClickL
             case R.id.item_info:
                 Intent intent = new Intent(mContext, PacketViewerActivity.class);
                 intent.putExtra("content", logPacket.getPacketContent());
+                intent.putExtra("packetName", logPacket.getPacketName());
                 mContext.startActivity(intent);
 
                 break;

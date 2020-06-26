@@ -11,6 +11,7 @@ import org.json.JSONObject;
 public class PacketViewerActivity extends AppCompatActivity {
 
     private static String content;
+    private static String packetName;
     TextView textView;
 
     @Override
@@ -21,13 +22,16 @@ public class PacketViewerActivity extends AppCompatActivity {
         textView = (TextView) findViewById(R.id.textView2);
         textView.setMovementMethod(new ScrollingMovementMethod());
 
+
         if (extras != null) {
             content = extras.getString("content");
+            packetName = extras.getString("packetName");
 
 
         }
 
         try {
+            getSupportActionBar().setTitle(packetName);
             JSONObject obj = new JSONObject(content);
             textView.setText(obj.toString(4));
 
