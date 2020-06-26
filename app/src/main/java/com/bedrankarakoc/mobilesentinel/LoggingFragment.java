@@ -1,6 +1,7 @@
 package com.bedrankarakoc.mobilesentinel;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -15,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,6 +36,8 @@ public class LoggingFragment extends Fragment {
     private Button stopLoggingButton;
     private ListView listView;
     private String filename;
+    private TextView loggingInfoText;
+
 
     // Setup
     ArrayList<LogPacket> packetList;
@@ -57,6 +63,7 @@ public class LoggingFragment extends Fragment {
         listView = (ListView) view.findViewById(R.id.listView);
         startLoggingButton = (Button) view.findViewById(R.id.start_logging_button);
         stopLoggingButton = (Button) view.findViewById(R.id.stop_logging_button);
+        loggingInfoText = (TextView)view.findViewById(R.id.loggingInfoTextView);
         startLoggingButtonListener();
         stopLoggingButtonListener();
         mContext = getActivity();
@@ -78,9 +85,13 @@ public class LoggingFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+                adapter.clear();
+                listView.setAdapter(adapter);
+                loggingInfoText.setVisibility(View.VISIBLE);
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
                 filename = sdf.format(new Date());
-
+                loggingInfoText.setText("Packet capture started ...");
+                loggingInfoText.setTextColor(Color.GREEN);
                 Python py = Python.getInstance();
                 PyObject pyf = py.getModule("setup_parser");
                 pyf.callAttr("start_logging", filename);
@@ -99,6 +110,8 @@ public class LoggingFragment extends Fragment {
         stopLoggingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loggingInfoText.setText("Processing packets please wait ....");
+
 
                 new Thread(new Runnable() {
                     @Override
@@ -125,6 +138,7 @@ public class LoggingFragment extends Fragment {
                             public void run() {
                                 listView.setAdapter(adapter);
                                 System.out.println("Packets updated");
+                                loggingInfoText.setVisibility(View.INVISIBLE);
                             }
                         });
 
