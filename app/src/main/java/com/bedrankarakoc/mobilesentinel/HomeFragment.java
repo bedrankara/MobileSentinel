@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellIdentityLte;
 import android.telephony.CellIdentityWcdma;
@@ -27,7 +28,14 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.NetworkInterface;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -85,7 +93,22 @@ public class HomeFragment extends Fragment {
         } else {
             int cellNumber = cellInfoList.size();
             BaseStation servingBaseStation = bindData(cellInfoList.get(0));
-            cellInfoView.setText("Obtained " + cellNumber + " Base Stations" +  "\nServing Base station：\n" + servingBaseStation.toString());
+            File sdcard = Environment.getExternalStorageDirectory();
+            File file = new File(sdcard+"/logs/cellProperties.txt");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+            String timestamp = sdf.format(new Date());
+
+
+            try {
+                OutputStreamWriter file_writer = new OutputStreamWriter(new FileOutputStream(file, true));
+                BufferedWriter buffered_writer = new BufferedWriter(file_writer);
+                buffered_writer.write( timestamp + "----->" + servingBaseStation.toString()+"\n");
+                buffered_writer.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+                cellInfoView.setText("Obtained " + cellNumber + " Base Stations" +  "\nServing Base station：\n" + servingBaseStation.toString());
             for (CellInfo cellInfo : cellInfoList) {
                 BaseStation bs = bindData(cellInfo);
                 System.out.println(bs.toString());
