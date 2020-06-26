@@ -2,6 +2,8 @@ package com.bedrankarakoc.mobilesentinel;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,12 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -31,7 +37,10 @@ public class DetectionFragment extends Fragment {
     private String filename;
     private Button startDetectionButton;
     private Button stopDetectionButton;
-    private TelephonyManager telephonyManager;
+    private TextView detectionProgressText;
+    private TextView cellStatusText;
+    TelephonyManager telephonyManager;
+    ProgressBar progressBar;
     private TelecomManager telecomManager;
     private String phoneNumber = "";
     ArrayList<LogPacket> packetList;
@@ -50,6 +59,17 @@ public class DetectionFragment extends Fragment {
         view = inflater.inflate(R.layout.detection_fragment, container, false);
         startDetectionButton = (Button) view.findViewById(R.id.start_detection_button);
         stopDetectionButton = (Button) view.findViewById(R.id.stop_detection_button);
+        detectionProgressText = (TextView)view.findViewById(R.id.detectionProgressText);
+        cellStatusText = (TextView)view.findViewById(R.id.cellStatusTextView);
+
+        progressBar = view.findViewById(R.id.detectionProgress);
+        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.animate();
+        detectionProgressText.setVisibility(View.INVISIBLE);
+
+
+        progressBar.setMax(32);
+        progressBar.setScaleY(3f);
         startDetectionButtonListener();
         stopDetectionButtonListener();
         telephonyManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
@@ -65,12 +85,17 @@ public class DetectionFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                progressBar.setVisibility(View.VISIBLE);
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
                 filename = sdf.format(new Date());
 
                 Python py = Python.getInstance();
                 PyObject pyf = py.getModule("setup_parser");
                 pyf.callAttr("start_logging", filename);
+
+                progressBar.setVisibility(View.VISIBLE);
+                detectionProgressText.setVisibility(View.VISIBLE);
+                detectionProgressText.setText("Starting Detection ...");
 
                 stopDetection = false;
 
@@ -80,8 +105,13 @@ public class DetectionFragment extends Fragment {
 
                         for (int i = 0; i < 32; i++) {
 
+                            progressBar.setProgress(i+1, true);
+
+
                             if (stopDetection == true) {
-                                System.out.println("Reached stop detection");
+
+
+                                progressBar.setProgress(0, true);
 
                                 try {
                                     Thread.sleep(3000);
@@ -100,6 +130,7 @@ public class DetectionFragment extends Fragment {
 
                                 File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
                                 System.out.println(baseDir);
+                                progressBar.setProgress(16);
 
                                 // TODO: Dirty
                                 String qmdlFilename = "";
@@ -109,9 +140,22 @@ public class DetectionFragment extends Fragment {
                                         qmdlFilename = f.getName();
                                     }
                                 }
-                                pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename);
-                                System.out.println("Parsing finished");
 
+
+
+                                pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename, cellStatusText);
+                                System.out.println("Parsing finished");
+                                progressBar.setProgress(32);
+
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        detectionProgressText.setText("Detection Run finished");
+                                        detectionProgressText.setTextColor(Color.GREEN);
+
+                                    }
+                                });
                                 break;
                             }
 
@@ -154,39 +198,16 @@ public class DetectionFragment extends Fragment {
         stopDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 stopDetection = true;
+                detectionProgressText.setTextColor(Color.RED);
+                detectionProgressText.setText("Stopping Detection ...");
 
-                /*new Thread(new Runnable() {
-                    @Override
-                    public void run() {
 
-                        Python py = Python.getInstance();
-                        PyObject pyf = py.getModule("setup_parser");
-                        pyf.callAttr("stop_logging");
 
-                        File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
-                        System.out.println(baseDir);
 
-                        // TODO: Dirty
-                        String qmdlFilename = "";
 
-                        for (File f : baseDir.listFiles()) {
-                            if (f.getName().endsWith(".qmdl")) {
-                                qmdlFilename = f.getName();
-                            }
-                        }
-                        pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                System.out.println("Parsing finished");
-                            }
-                        });
 
-                    }
-                }
-
-                ).start();*/
             }
         });
     }
