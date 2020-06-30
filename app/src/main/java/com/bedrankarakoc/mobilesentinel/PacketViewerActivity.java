@@ -57,6 +57,7 @@ public class PacketViewerActivity extends AppCompatActivity {
         textView = (TextView) findViewById(R.id.textView2);
         searchButton = (ImageButton) findViewById(R.id.packetSearchButton);
         nextSearchItemButton = (Button) findViewById(R.id.nextSearchItemButton);
+        nextSearchItemButton.setVisibility(View.INVISIBLE);
         textView.setMovementMethod(new ScrollingMovementMethod());
         scrollView = (ScrollView) findViewById(R.id.packetScrollView);
         mContext = getApplicationContext();
@@ -97,7 +98,7 @@ public class PacketViewerActivity extends AppCompatActivity {
 
                         try {
 
-
+                            nextSearchItemButton.setVisibility(View.VISIBLE);
                             replaceString = contentJson.toString(4);
                             searchItem = String.valueOf(searchEditText.getText());
                             startIndex = replaceString.indexOf(searchItem);
@@ -165,6 +166,7 @@ public class PacketViewerActivity extends AppCompatActivity {
 
 
                 }
+                
             }
         });
     }
