@@ -5,6 +5,7 @@ from com.bedrankarakoc.mobilesentinel import LogPacket as logPacket
 
 from statemachine.detection_handler import Detection
 from statemachine import detection_handler
+from statemachine.detectionhandler import DetectionHandler
 from PacketArrayWriter import PacketArrayWriter
 import util
 import struct
@@ -15,11 +16,13 @@ from binascii import unhexlify, hexlify
 
 
 class DiagLteLogParser:
-    def __init__(self, parent, packet_list):
+    def __init__(self, parent, packet_list, detection_view=None):
+        self.detection_view = detection_view
         self.parent = parent
         self.packetArrayWriter = PacketArrayWriter(packet_list)
         self.packet_list = packet_list
-        self.detection_handler = Detection()
+        self.detection_handler = DetectionHandler()
+
 
         self.no_process = {
             0xB061: 'LTE MAC RACH Trigger',
@@ -1092,7 +1095,11 @@ class DiagLteLogParser:
             device_usec = ts_usec)
 
         self.packetArrayWriter.append_packet(rrc_subtype_map[subtype], msg_content.hex())
-        self.detection_handler.on_event(rrc_subtype_map[subtype], msg_content.hex())
+        #self.detection_handler.on_event(rrc_subtype_map[subtype], msg_content.hex())
+        is_vulnerable = self.detection_handler.revolte_check(rrc_subtype_map[subtype], msg_content.hex())
+
+        if is_vulnerable == True and self.detection_view is not None:
+            self.detection_view.setText("Cell is vulnerable!!")
 
         self.parent.writer.write_cp(gsmtap_hdr + msg_content, radio_id, pkt_ts)
 

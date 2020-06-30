@@ -28,7 +28,7 @@ IP_OVER_UDP_PORT = 47290
 def start_logging(filename):
     print(subprocess.check_output(['su','-c', 'mkdir /data/media/0/logs/'+filename]))
     print(subprocess.check_output(['su','-c', 'chmod 777 /data/media/0/logs/'+filename]))
-    subprocess.Popen(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/full_diag -o /data/media/0/logs/'+filename])
+    subprocess.Popen(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/RRCDIAG.cfg -o /data/media/0/logs/'+filename])
     print("Mdlog is running")
 
 def stop_logging():
@@ -36,10 +36,10 @@ def stop_logging():
     #print(subprocess.check_output(['su','-c','diag_mdlog -k']))
     print("Mdlog is stopped")
 
-def initiate_parsing(packet_list,dump_directory,dump_filename):
+def initiate_parsing(packet_list,dump_directory,dump_filename, detection_view=None):
 
     # Hardcoded values
-    my_parser = parsers.QualcommParser(packet_list)
+    my_parser = parsers.QualcommParser(packet_list, detection_view)
     d = str(Environment.getExternalStorageDirectory());
     print(d)
     filepath = os.path.join(d, 'logs/' + dump_directory +'/'+dump_filename)
@@ -49,3 +49,4 @@ def initiate_parsing(packet_list,dump_directory,dump_filename):
     writer = writers.PcapWriter(dump_directory, GSMTAP_PORT, IP_OVER_UDP_PORT)
     my_parser.set_writer(writer)
     my_parser.read_dump()
+
