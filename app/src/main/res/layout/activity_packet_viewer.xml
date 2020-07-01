@@ -14,7 +14,7 @@
         android:layout_height="47dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:drawableStart="@drawable/ic_group_collapse_10"
+        android:drawableStart="@drawable/ic_arrow_downward_black_24dp"
         android:drawableTint="@android:color/holo_orange_dark"
         android:backgroundTint="@android:color/darker_gray"
         android:clickable="true"
