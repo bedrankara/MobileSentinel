@@ -33,7 +33,7 @@ public class HomeBottomBar extends AppCompatActivity {
 
 
     // Permissions
-    private String[] permissions = {"android.permissions.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permissions.READ_PHONE_STATE", "android.permission.ACCESS_COARSE_LOCATION"
+    private String[] permissions = {"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_PHONE_STATE", "android.permission.ACCESS_COARSE_LOCATION"
     , "android.permission.ACCESS_COARSE_UPDATES", "android.permission.ACCESS_FINE_LOCATION", "android.permission.CALL_PHONE", "android.permission.ANSWER_PHONE_CALLS"};
     private int requestCode = 1337;
     private Context mContext;
@@ -61,8 +61,6 @@ public class HomeBottomBar extends AppCompatActivity {
         requestPermissions(permissions, requestCode);
         sdcard = Environment.getExternalStorageDirectory();
         createConfig();
-
-        //getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#ff8700\">" + getString(R.string.app_name) + "</font>"));
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.abs_layout);
         actionBarText = findViewById(R.id.actionBarTitle);
@@ -80,7 +78,6 @@ public class HomeBottomBar extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         System.out.println("Pressed back");
-
     }
 
 
