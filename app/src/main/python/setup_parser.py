@@ -32,8 +32,8 @@ def start_logging(filename):
     print("Mdlog is running")
 
 def stop_logging():
-    subprocess.Popen(['su','-c','diag_mdlog -k'])
-    #print(subprocess.check_output(['su','-c','diag_mdlog -k']))
+    #subprocess.Popen(['su','-c','diag_mdlog -k'])
+    print(subprocess.check_output(['su','-c','diag_mdlog -k']))
     print("Mdlog is stopped")
 
 def initiate_parsing(packet_list,dump_directory,dump_filename, detection_view=None):
