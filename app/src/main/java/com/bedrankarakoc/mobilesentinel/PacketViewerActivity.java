@@ -109,8 +109,8 @@ public class PacketViewerActivity extends AppCompatActivity {
 
                                 int textLine = textView.getLayout().getLineForOffset(startIndex);
                                 SpannableString spannableString = new SpannableString(contentJson.toString(4));
-                                ForegroundColorSpan fcsRed = new ForegroundColorSpan(Color.RED);
-                                RelativeSizeSpan relativeSizeSpan = new RelativeSizeSpan(2f);
+                                ForegroundColorSpan fcsRed = new ForegroundColorSpan(Color.GREEN);
+                                RelativeSizeSpan relativeSizeSpan = new RelativeSizeSpan(1.5f);
                                 spannableString.setSpan(relativeSizeSpan, startIndex, startIndex + searchItem.length(), 0);
                                 spannableString.setSpan(fcsRed, startIndex, startIndex + searchItem.length(), Spanned.SPAN_COMPOSING);
                                 textView.setText(spannableString);
@@ -151,8 +151,8 @@ public class PacketViewerActivity extends AppCompatActivity {
                         int textLine = textView.getLayout().getLineForOffset(startIndex);
                         SpannableString spannableString = null;
                         spannableString = new SpannableString(contentJson.toString(4));
-                        ForegroundColorSpan fcsRed = new ForegroundColorSpan(Color.RED);
-                        RelativeSizeSpan relativeSizeSpan = new RelativeSizeSpan(2f);
+                        ForegroundColorSpan fcsRed = new ForegroundColorSpan(Color.GREEN);
+                        RelativeSizeSpan relativeSizeSpan = new RelativeSizeSpan(1.5f);
                         if (startIndex > 0) {
                             spannableString.setSpan(relativeSizeSpan, startIndex, startIndex + searchItem.length(), 0);
                             spannableString.setSpan(fcsRed, startIndex, startIndex + searchItem.length(), Spanned.SPAN_COMPOSING);
