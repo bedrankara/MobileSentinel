@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
+    <TextView
+        android:id="@+id/volteStatusTextView"
+        android:layout_width="202dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/detectionProgressText"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="23dp"
+        android:layout_marginBottom="141dp"
+        android:text="isVolteEnabled : False"
+        android:textAlignment="viewStart"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+
     <include
 
         layout="@layout/buttontable"
@@ -50,6 +64,7 @@
         android:layout_height="133dp"
         android:layout_above="@+id/detectionProgressText"
         android:layout_alignParentStart="true"
+        android:textAlignment="center"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="43dp"
         android:layout_marginEnd="235dp"
@@ -58,16 +73,16 @@
 
     <TextView
         android:id="@+id/cellStatusTextView"
-        android:layout_width="191dp"
-        android:layout_height="53dp"
+        android:layout_width="202dp"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/detectionProgressText"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="28dp"
-        android:layout_marginBottom="114dp"
-        android:text="Current Cell not tested"
-        android:textAlignment="center"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="184dp"
+        android:text="Cell Status : Not Tested"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/holo_orange_dark"
-        android:textSize="23dp"
+        android:textSize="18dp"
         android:textStyle="bold" />
 
 </RelativeLayout>
