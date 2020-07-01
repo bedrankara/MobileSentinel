@@ -26,6 +26,7 @@ import com.chaquo.python.Python;
 import org.w3c.dom.Text;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,8 +40,9 @@ public class DetectionFragment extends Fragment {
     private Button stopDetectionButton;
     private TextView detectionProgressText;
     private TextView cellStatusText;
-    TelephonyManager telephonyManager;
-    ProgressBar progressBar;
+    private TextView isVolteEnabledText;
+    private TelephonyManager telephonyManager;
+    private ProgressBar progressBar;
     private TelecomManager telecomManager;
     private String phoneNumber = "";
     ArrayList<LogPacket> packetList;
@@ -53,21 +55,36 @@ public class DetectionFragment extends Fragment {
 
     }
 
+    // TODO: Pay attention to Fragment Lifecycle https://developer.android.com/guide/components/fragments.html#Creating
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (isVolteEnabled(telephonyManager) == true) {
+            isVolteEnabledText.setText("isVolteEnabled : True");
+            isVolteEnabledText.setTextColor(Color.GREEN);
+        } else {
+            isVolteEnabledText.setText("isVolteEnabled : False");
+            isVolteEnabledText.setTextColor(Color.RED);
+        }
+
+
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.detection_fragment, container, false);
         startDetectionButton = (Button) view.findViewById(R.id.start_detection_button);
         stopDetectionButton = (Button) view.findViewById(R.id.stop_detection_button);
-        detectionProgressText = (TextView)view.findViewById(R.id.detectionProgressText);
-        cellStatusText = (TextView)view.findViewById(R.id.cellStatusTextView);
-
+        stopDetectionButton.setClickable(false);
+        detectionProgressText = (TextView) view.findViewById(R.id.detectionProgressText);
+        cellStatusText = (TextView) view.findViewById(R.id.cellStatusTextView);
+        isVolteEnabledText = (TextView) view.findViewById(R.id.volteStatusTextView);
         progressBar = view.findViewById(R.id.detectionProgress);
         progressBar.setVisibility(View.INVISIBLE);
         progressBar.animate();
         detectionProgressText.setVisibility(View.INVISIBLE);
-
-
         progressBar.setMax(32);
         progressBar.setScaleY(3f);
         startDetectionButtonListener();
@@ -84,7 +101,7 @@ public class DetectionFragment extends Fragment {
         startDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startDetectionButton.setClickable(false);
                 progressBar.setVisibility(View.VISIBLE);
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
                 filename = sdf.format(new Date());
@@ -92,6 +109,7 @@ public class DetectionFragment extends Fragment {
                 Python py = Python.getInstance();
                 PyObject pyf = py.getModule("setup_parser");
                 pyf.callAttr("start_logging", filename);
+                stopDetectionButton.setClickable(true);
 
                 progressBar.setVisibility(View.VISIBLE);
                 detectionProgressText.setVisibility(View.VISIBLE);
@@ -105,7 +123,7 @@ public class DetectionFragment extends Fragment {
 
                         for (int i = 0; i < 32; i++) {
 
-                            progressBar.setProgress(i+1, true);
+                            progressBar.setProgress(i + 1, true);
 
 
                             if (stopDetection == true) {
@@ -142,7 +160,6 @@ public class DetectionFragment extends Fragment {
                                 }
 
 
-
                                 pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename, cellStatusText);
                                 System.out.println("Parsing finished");
                                 progressBar.setProgress(32);
@@ -156,6 +173,8 @@ public class DetectionFragment extends Fragment {
 
                                     }
                                 });
+                                startDetectionButton.setClickable(true);
+
                                 break;
                             }
 
@@ -199,16 +218,29 @@ public class DetectionFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                stopDetectionButton.setClickable(false);
                 stopDetection = true;
                 detectionProgressText.setTextColor(Color.RED);
                 detectionProgressText.setText("Stopping Detection ...");
 
 
-
-
-
-
             }
         });
+    }
+    // Use reflection to access method with @UnsupportedAppUsage tag
+    public boolean isVolteEnabled(TelephonyManager telephonyManager) {
+        boolean isVolteEnabled = false;
+        try {
+
+            Method method = telephonyManager.getClass().getMethod("isVolteAvailable");
+            isVolteEnabled = (boolean) method.invoke(telephonyManager);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return isVolteEnabled;
+
     }
 }
