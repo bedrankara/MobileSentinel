@@ -73,6 +73,7 @@ public class LoggingFragment extends Fragment {
             Python.start(new AndroidPlatform(mContext));
         packetList = new ArrayList<>();
         adapter = new LogAdapter(packetList, mContext);
+        stopLoggingButton.setClickable(false);
         listView.setAdapter(adapter);
         return view;
     }
@@ -85,6 +86,7 @@ public class LoggingFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+                startLoggingButton.setClickable(false);
                 adapter.clear();
                 listView.setAdapter(adapter);
                 loggingInfoText.setVisibility(View.VISIBLE);
@@ -95,6 +97,7 @@ public class LoggingFragment extends Fragment {
                 Python py = Python.getInstance();
                 PyObject pyf = py.getModule("setup_parser");
                 pyf.callAttr("start_logging", filename);
+                stopLoggingButton.setClickable(true);
 
 
 
@@ -111,6 +114,8 @@ public class LoggingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 loggingInfoText.setText("Processing packets please wait ....");
+                startLoggingButton.setClickable(false);
+                stopLoggingButton.setClickable(false);
 
 
                 new Thread(new Runnable() {
@@ -139,6 +144,7 @@ public class LoggingFragment extends Fragment {
                                 listView.setAdapter(adapter);
                                 System.out.println("Packets updated");
                                 loggingInfoText.setVisibility(View.INVISIBLE);
+                                startLoggingButton.setClickable(true);
                             }
                         });
 
