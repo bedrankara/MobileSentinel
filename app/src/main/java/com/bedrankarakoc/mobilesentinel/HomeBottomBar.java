@@ -1,6 +1,8 @@
 package com.bedrankarakoc.mobilesentinel;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import android.text.Html;
@@ -12,7 +14,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -33,8 +38,7 @@ public class HomeBottomBar extends AppCompatActivity {
 
 
     // Permissions
-    private String[] permissions = {"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_PHONE_STATE", "android.permission.ACCESS_COARSE_LOCATION"
-    , "android.permission.ACCESS_COARSE_UPDATES", "android.permission.ACCESS_FINE_LOCATION", "android.permission.CALL_PHONE", "android.permission.ANSWER_PHONE_CALLS"};
+    private String[] permissions = {"android.permission.CALL_PHONE", "android.permission.ANSWER_PHONE_CALLS", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_PHONE_STATE", "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"};
     private int requestCode = 1337;
     private Context mContext;
     private File sdcard;
@@ -48,24 +52,27 @@ public class HomeBottomBar extends AppCompatActivity {
     Fragment settingsFragment = new SettingsFragment();
     Fragment active = homeFragment;
     FragmentManager fragmentManager = getSupportFragmentManager();
+    String rrcConfig;
+    String fullConfig;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_bottom_bar);
-
+        mContext = getApplicationContext();
+        fullConfig = mContext.getResources().getResourceEntryName(R.raw.full_diag);
+        rrcConfig = mContext.getResources().getResourceEntryName(R.raw.rrc_diag);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
-        mContext = getApplicationContext();
+
         requestPermissions(permissions, requestCode);
         sdcard = Environment.getExternalStorageDirectory();
-        createConfig();
+        createConfig(fullConfig);
+        createConfig(rrcConfig);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.abs_layout);
         actionBarText = findViewById(R.id.actionBarTitle);
-
-
 
 
         fragmentManager.beginTransaction().add(R.id.fragment_container, settingsFragment, "4").hide(settingsFragment).commit();
@@ -115,14 +122,10 @@ public class HomeBottomBar extends AppCompatActivity {
             };
 
 
-
-
-
     // Create logging config files (from raw resources) to external storage
-    public void createConfig() {
+    public void createConfig(String filename) {
         String configDir = "/logs";
         InputStream inputStream = mContext.getResources().openRawResource(R.raw.full_diag);
-        String filename = mContext.getResources().getResourceEntryName(R.raw.full_diag);
 
         File f = new File(filename + ".cfg");
         try {
@@ -143,5 +146,49 @@ public class HomeBottomBar extends AppCompatActivity {
 
     }
 
+    public void showPermissionDialog(Context context) {
+        new AlertDialog.Builder(context)
+                .setTitle("Accept all permissions")
+                .setCancelable(false)
+                .setMessage("Accept all requested permissions and superuser requests as the app won't work without")
+                .setPositiveButton("Accept Permissions", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissions(permissions, requestCode);
+                    }
+                })
+                .setNegativeButton("Exit Application", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finishAffinity();
+                        System.exit(0);
+                    }
+                })
+                .show();
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (checkMultiplePermissions(HomeBottomBar.this, permissions) == true) {
+            System.out.println("All permissions granted");
+        } else {
+            System.out.println("Permissions missing");
+            showPermissionDialog(HomeBottomBar.this);
+        }
+
+    }
+
+    public static boolean checkMultiplePermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                System.out.println(permission);
+                if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    System.out.println(permission + "Not granted");
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
