@@ -70,6 +70,7 @@ class DetectionHandler:
                                     'rrcConnectionReconfiguration-r8']['securityConfigHO'][
                                     'handoverType']:
                             print("HandoverType")
+                            self.call_flow.append(iter)
                             print(iter)
 
 
