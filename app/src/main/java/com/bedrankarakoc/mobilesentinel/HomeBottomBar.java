@@ -68,8 +68,6 @@ public class HomeBottomBar extends AppCompatActivity {
 
         requestPermissions(permissions, requestCode);
         sdcard = Environment.getExternalStorageDirectory();
-        createConfig(fullConfig);
-        createConfig(rrcConfig);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.abs_layout);
         actionBarText = findViewById(R.id.actionBarTitle);
@@ -100,7 +98,7 @@ public class HomeBottomBar extends AppCompatActivity {
                             active = homeFragment;
                             return true;
                         case R.id.nav_detection:
-                            actionBarText.setText("Detection");
+                            actionBarText.setText("ReVoLTE Detection");
                             fragmentManager.beginTransaction().hide(active).show(detectionFragment).commit();
                             active = detectionFragment;
                             return true;
@@ -171,6 +169,8 @@ public class HomeBottomBar extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (checkMultiplePermissions(HomeBottomBar.this, permissions) == true) {
             System.out.println("All permissions granted");
+            createConfig(fullConfig);
+            createConfig(rrcConfig);
         } else {
             System.out.println("Permissions missing");
             showPermissionDialog(HomeBottomBar.this);
