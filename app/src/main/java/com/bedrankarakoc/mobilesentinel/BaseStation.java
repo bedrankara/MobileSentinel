@@ -131,19 +131,18 @@ public class BaseStation {
 
     @Override
     public String toString() {
-        return "BaseStation{" +
-                "mcc=" + mcc +
-                ", mnc=" + mnc +
-                ", lac=" + lac +
-                ", cid=" + cid +
-                ", arfcn=" + arfcn +
-                ", bsic_psc_pci=" + bsic_psc_pci +
-                ", lon=" + lon +
-                ", lat=" + lat +
-                ", asuLevel=" + asuLevel +
-                ", signalLevel=" + signalLevel +
-                ", dbm=" + dbm +
-                ", type='" + type + '\'' +
-                '}';
+        return
+                " mcc=" + mcc + "\n" +
+                " mnc=" + mnc + "\n" +
+                " lac=" + lac + "\n" +
+                " cid=" + cid + "\n" +
+                " earfcn=" + arfcn + "\n" +
+                " pci=" + bsic_psc_pci + "\n" +
+                " lon=" + lon + "\n" +
+                " lat=" + lat + "\n" +
+                " asuLevel=" + asuLevel + "\n" +
+                " signalLevel=" + signalLevel + "\n" +
+                " dbm=" + dbm + "\n" +
+                " type='" + type + '\'';
     }
 }
