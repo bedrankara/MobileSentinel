@@ -10,7 +10,7 @@ class DetectionHandler:
     def __init__(self):
         self.initial_drb_id = 0
         self.drb_id = 0
-        self.call_flow = [1337]
+        self.call_flow = []
 
     def filter_packet(self, rrc_subtype, msg):
         if str(rrc_subtype) == "gsmtap_lte_rrc_types.DL_DCCH":
@@ -43,10 +43,15 @@ class DetectionHandler:
                                     'radioResourceConfigDedicated'][
                                     'drb-ToReleaseList']:
 
-                            if self.call_flow[-1] == iter:
-                                print("VULNERABLE ENB!!!!!")
-                                return True
-                            self.call_flow.append(iter)
+                            if len(self.call_flow) != 0:
+
+                                if iter in self.call_flow and 'securityConfigHO' not in self.call_flow:
+
+                                    print("VULNERABLE ENB!!!!!")
+                                    return True
+
+                            #self.call_flow.append(iter)
+                            self.call_flow.append(4)
                             print(self.call_flow)
 
 
@@ -58,19 +63,19 @@ class DetectionHandler:
                         parsed_msg['message']['c1']['rrcConnectionReconfiguration'][
                             'criticalExtensions'][
                             'c1']['rrcConnectionReconfiguration-r8']:
-                    print("securityConfigHO present")
+
                     if 'handoverType' in \
                             parsed_msg['message']['c1']['rrcConnectionReconfiguration'][
                                 'criticalExtensions'][
                                 'c1']['rrcConnectionReconfiguration-r8']['securityConfigHO']:
-                        print("handoverType present in securityConfigHO")
+
                         for iter in \
                                 parsed_msg['message']['c1']['rrcConnectionReconfiguration'][
                                     'criticalExtensions']['c1'][
                                     'rrcConnectionReconfiguration-r8']['securityConfigHO'][
                                     'handoverType']:
                             print("HandoverType")
-                            self.call_flow.append(iter)
+                            self.call_flow.append('securityConfigHO')
                             print(iter)
 
 
