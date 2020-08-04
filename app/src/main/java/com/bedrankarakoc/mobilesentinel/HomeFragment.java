@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,8 +49,7 @@ public class HomeFragment extends Fragment {
     private View view;
     private TelephonyManager telephonyManager;
     private Context mContext;
-
-
+    private boolean isVolteEnabled;
 
 
     @Nullable
@@ -57,7 +57,6 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.home_fragment, container, false);
         cellInfoView = view.findViewById(R.id.cellInfoView);
-
         return view;
     }
 
@@ -65,8 +64,6 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         telephonyManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-
-
         mContext = getActivity();
 
     }
@@ -75,9 +72,7 @@ public class HomeFragment extends Fragment {
     public void onStart() {
         super.onStart();
         showCellinfo(view);
-        System.out.println(telephonyManager.getNetworkType());
         cellInfoView.append("SIM 1 IMSI : " + getImsi() + "\n");
-
 
 
     }
@@ -96,16 +91,13 @@ public class HomeFragment extends Fragment {
                 output.append(line + "\n");
                 p.waitFor();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         String response = output.toString();
         return response;
-
-
 
 
     }
@@ -125,7 +117,6 @@ public class HomeFragment extends Fragment {
         }
 
 
-
         if (cellInfoList == null) {
             cellInfoView.setText("Activate your GPS for cellinfo \n");
         } else if (cellInfoList.size() == 0) {
@@ -134,7 +125,7 @@ public class HomeFragment extends Fragment {
             int cellNumber = cellInfoList.size();
             BaseStation servingBaseStation = bindData(cellInfoList.get(0));
             File sdcard = Environment.getExternalStorageDirectory();
-            File file = new File(sdcard+"/logs/cellProperties.txt");
+            File file = new File(sdcard + "/logs/cellProperties.txt");
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
             String timestamp = sdf.format(new Date());
 
@@ -142,13 +133,13 @@ public class HomeFragment extends Fragment {
             try {
                 OutputStreamWriter file_writer = new OutputStreamWriter(new FileOutputStream(file, true));
                 BufferedWriter buffered_writer = new BufferedWriter(file_writer);
-                buffered_writer.write( timestamp + "----->" + servingBaseStation.toString()+"\n");
+                buffered_writer.write(timestamp + "----->" + servingBaseStation.toString() + "\n");
                 buffered_writer.close();
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-                cellInfoView.setText("Obtained " + cellNumber + " Base Stations" +  "\nServing Base station：\n" + servingBaseStation.toString() + "\n");
+            cellInfoView.setText("Obtained " + cellNumber + " Base Stations" + "\nServing Base station：\n" + servingBaseStation.toString() + "\n");
             for (CellInfo cellInfo : cellInfoList) {
                 BaseStation bs = bindData(cellInfo);
                 System.out.println(bs.toString());
