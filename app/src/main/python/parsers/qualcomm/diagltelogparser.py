@@ -3,8 +3,6 @@
 from . import diagcmd
 from com.bedrankarakoc.mobilesentinel import LogPacket as logPacket
 
-from statemachine.detection_handler import Detection
-from statemachine import detection_handler
 from statemachine.detectionhandler import DetectionHandler
 from PacketArrayWriter import PacketArrayWriter
 import util
@@ -16,12 +14,13 @@ from binascii import unhexlify, hexlify
 
 
 class DiagLteLogParser:
-    def __init__(self, parent, packet_list, detection_view=None):
+    def __init__(self, parent, packet_list, detection_view=None, isVulnerable=None):
         self.detection_view = detection_view
         self.parent = parent
         self.packetArrayWriter = PacketArrayWriter(packet_list)
         self.packet_list = packet_list
         self.detection_handler = DetectionHandler()
+        self.isVulnerable = isVulnerable
 
 
         self.no_process = {
@@ -1100,6 +1099,7 @@ class DiagLteLogParser:
 
         if is_vulnerable == True and self.detection_view is not None:
             self.detection_view.setText("Cell is vulnerable!!")
+            self.isVulnerable = True
 
         self.parent.writer.write_cp(gsmtap_hdr + msg_content, radio_id, pkt_ts)
 
