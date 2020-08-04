@@ -45,6 +45,8 @@ public class DetectionFragment extends Fragment {
     private ProgressBar progressBar;
     private TelecomManager telecomManager;
     private String phoneNumber = "";
+    private volatile boolean isVulnerable = false;
+    private volatile boolean nextIntervall = false;
     ArrayList<LogPacket> packetList;
     private volatile boolean stopDetection = false;
 
@@ -96,117 +98,151 @@ public class DetectionFragment extends Fragment {
         return view;
     }
 
+    public void startDetectionRun(final int intervall) {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startDetectionButton.setClickable(false);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+        });
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+        filename = sdf.format(new Date());
+
+        Python py = Python.getInstance();
+        PyObject pyf = py.getModule("setup_parser");
+        pyf.callAttr("start_logging", filename);
+        stopDetectionButton.setClickable(true);
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setVisibility(View.VISIBLE);
+                detectionProgressText.setVisibility(View.VISIBLE);
+                detectionProgressText.setText("Starting Detection ...");
+            }
+        });
+
+
+        stopDetection = false;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                for (int i = 0; i < intervall+1; i++) {
+
+                    progressBar.setProgress(i + 1, true);
+
+
+                    if (stopDetection == true || i == intervall) {
+
+
+                        progressBar.setProgress(0, true);
+
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Python py = Python.getInstance();
+                        PyObject pyf = py.getModule("setup_parser");
+                        pyf.callAttr("stop_logging");
+
+                        try {
+                            Thread.sleep(4000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
+                        System.out.println(baseDir);
+                        progressBar.setProgress(16);
+
+                        // TODO: Dirty
+                        String qmdlFilename = "";
+
+                        for (File f : baseDir.listFiles()) {
+                            if (f.getName().endsWith(".qmdl")) {
+                                qmdlFilename = f.getName();
+                            }
+                        }
+
+
+                        pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename, cellStatusText, isVulnerable);
+                        System.out.println("Parsing finished");
+                        progressBar.setProgress(intervall);
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                detectionProgressText.setText("Detection Run finished");
+                                detectionProgressText.setTextColor(Color.GREEN);
+                                nextIntervall = true;
+                            }
+                        });
+                        startDetectionButton.setClickable(true);
+
+                        break;
+                    }
+
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + phoneNumber));
+                        startActivity(intent);
+                    } catch (SecurityException s) {
+                        s.printStackTrace();
+                    }
+
+                    try {
+
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    telecomManager.endCall();
+
+                    try {
+
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+        }).start();
+    }
 
     public void startDetectionButtonListener() {
         startDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDetectionButton.setClickable(false);
-                progressBar.setVisibility(View.VISIBLE);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-                filename = sdf.format(new Date());
-
-                Python py = Python.getInstance();
-                PyObject pyf = py.getModule("setup_parser");
-                pyf.callAttr("start_logging", filename);
-                stopDetectionButton.setClickable(true);
-
-                progressBar.setVisibility(View.VISIBLE);
-                detectionProgressText.setVisibility(View.VISIBLE);
-                detectionProgressText.setText("Starting Detection ...");
-
-                stopDetection = false;
 
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-
-                        for (int i = 0; i < 32; i++) {
-
-                            progressBar.setProgress(i + 1, true);
-
-
-                            if (stopDetection == true) {
-
-
-                                progressBar.setProgress(0, true);
-
-                                try {
-                                    Thread.sleep(3000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                Python py = Python.getInstance();
-                                PyObject pyf = py.getModule("setup_parser");
-                                pyf.callAttr("stop_logging");
-
-                                try {
-                                    Thread.sleep(4000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-
-                                File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
-                                System.out.println(baseDir);
-                                progressBar.setProgress(16);
-
-                                // TODO: Dirty
-                                String qmdlFilename = "";
-
-                                for (File f : baseDir.listFiles()) {
-                                    if (f.getName().endsWith(".qmdl")) {
-                                        qmdlFilename = f.getName();
-                                    }
-                                }
-
-
-                                pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename, cellStatusText);
-                                System.out.println("Parsing finished");
-                                progressBar.setProgress(32);
-
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        detectionProgressText.setText("Detection Run finished");
-                                        detectionProgressText.setTextColor(Color.GREEN);
-
-                                    }
-                                });
-                                startDetectionButton.setClickable(true);
-
+                        startDetectionRun(4);
+                        while (true) {
+                            if (nextIntervall) {
+                                System.out.println(isVulnerable);
+                                startDetectionRun(4);
+                                nextIntervall = false;
                                 break;
                             }
-
-                            try {
-                                Intent intent = new Intent(Intent.ACTION_CALL);
-                                intent.setData(Uri.parse("tel:" + phoneNumber));
-                                startActivity(intent);
-                            } catch (SecurityException s) {
-                                s.printStackTrace();
-                            }
-
-                            try {
-
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-
-
-                            telecomManager.endCall();
-
-                            try {
-
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-
                         }
-
                     }
                 }).start();
+
+
+
+
 
 
             }
