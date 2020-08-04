@@ -45,17 +45,22 @@ def stop_logging():
     print(subprocess.check_output(['su','-c','diag_mdlog -k']))
     print("Mdlog is stopped")
 
-def initiate_parsing(packet_list,dump_directory,dump_filename, detection_view=None):
+def initiate_parsing(packet_list,dump_directory,dump_filename, detection_view=None, isVulnerable=None):
 
     # Setup dump parser modules
-    my_parser = parsers.QualcommParser(packet_list, detection_view)
+    my_parser = parsers.QualcommParser(packet_list, detection_view, isVulnerable)
     d = str(Environment.getExternalStorageDirectory());
     print(d)
     filepath = os.path.join(d, 'logs/' + dump_directory +'/'+dump_filename)
     print(filepath)
-    io_device = iodevices.FileIO([str(filepath)])
-    my_parser.set_io_device(io_device)
+    try:
+        io_device = iodevices.FileIO([str(filepath)])
+        my_parser.set_io_device(io_device)
+    except Exception as e:
+        print(e)
     writer = writers.PcapWriter(dump_directory, GSMTAP_PORT, IP_OVER_UDP_PORT)
     my_parser.set_writer(writer)
+    print("Read dump starting")
     my_parser.read_dump()
+    print("read dump finished")
 
