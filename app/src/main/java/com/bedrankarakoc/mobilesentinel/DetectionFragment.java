@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -44,8 +45,8 @@ public class DetectionFragment extends Fragment {
     private TelephonyManager telephonyManager;
     private ProgressBar progressBar;
     private TelecomManager telecomManager;
-    private String phoneNumber = "";
-    private volatile boolean isVulnerable = false;
+    private String phoneNumber = "015221044890";
+    public int isVulnerable = 0;
     private volatile boolean nextIntervall = false;
     ArrayList<LogPacket> packetList;
     private volatile boolean stopDetection = false;
@@ -121,7 +122,7 @@ public class DetectionFragment extends Fragment {
             public void run() {
                 progressBar.setVisibility(View.VISIBLE);
                 detectionProgressText.setVisibility(View.VISIBLE);
-                detectionProgressText.setText("Starting Detection ...");
+
             }
         });
 
@@ -134,13 +135,14 @@ public class DetectionFragment extends Fragment {
 
                 for (int i = 0; i < intervall+1; i++) {
 
-                    progressBar.setProgress(i + 1, true);
+                    //progressBar.setProgress(i + 1, true);
+                    progressBar.incrementProgressBy(1);
 
 
                     if (stopDetection == true || i == intervall) {
 
 
-                        progressBar.setProgress(0, true);
+
 
                         try {
                             Thread.sleep(3000);
@@ -159,7 +161,7 @@ public class DetectionFragment extends Fragment {
 
                         File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
                         System.out.println(baseDir);
-                        progressBar.setProgress(16);
+
 
                         // TODO: Dirty
                         String qmdlFilename = "";
@@ -173,13 +175,13 @@ public class DetectionFragment extends Fragment {
 
                         pyf.callAttr("initiate_parsing", packetList, filename, qmdlFilename, cellStatusText, isVulnerable);
                         System.out.println("Parsing finished");
-                        progressBar.setProgress(intervall);
+
 
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
 
-                                detectionProgressText.setText("Detection Run finished");
+                                //detectionProgressText.setText("Detection Run finished");
                                 detectionProgressText.setTextColor(Color.GREEN);
                                 nextIntervall = true;
                             }
@@ -224,21 +226,33 @@ public class DetectionFragment extends Fragment {
         startDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        startDetectionRun(4);
-                        while (true) {
-                            if (nextIntervall) {
-                                System.out.println(isVulnerable);
-                                startDetectionRun(4);
-                                nextIntervall = false;
-                                break;
+                cellStatusText.setText("Cell Status : Test Running");
+                detectionProgressText.setTextColor(Color.GREEN);
+                detectionProgressText.setText("Detection Running");
+                System.out.println(isVulnerable);
+                if (isVolteEnabled(telephonyManager) == true) {
+                    isVolteEnabledText.setText("isVolteEnabled : True");
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            startDetectionRun(3);
+                            while (true) {
+                                if (nextIntervall) {
+                                    System.out.println(isVulnerable);
+                                    startDetectionRun(29);
+                                    nextIntervall = false;
+                                    break;
+                                }
                             }
                         }
-                    }
-                }).start();
+                    }).start();
+                } else {
+                    isVolteEnabledText.setText("isVolteEnabled : False");
+                    Toast.makeText(getActivity(), "VoLTE appears to be not enabled, check your carrier configs", Toast.LENGTH_LONG).show();
+
+                }
+
+
 
 
 
@@ -254,10 +268,14 @@ public class DetectionFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                detectionProgressText.setTextColor(Color.RED);
+                detectionProgressText.setText("Stopping Detection");
+                cellStatusText.setText("Cell Status : Not Tested");
+                progressBar.setProgress(progressBar.getMax());
                 stopDetectionButton.setClickable(false);
                 stopDetection = true;
-                detectionProgressText.setTextColor(Color.RED);
-                detectionProgressText.setText("Stopping Detection ...");
+                detectionProgressText.setText("Detection Stopped");
+
 
 
             }
