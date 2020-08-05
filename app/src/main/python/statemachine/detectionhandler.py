@@ -50,8 +50,8 @@ class DetectionHandler:
                                     print("VULNERABLE ENB!!!!!")
                                     return True
 
-                            #self.call_flow.append(iter)
-                            self.call_flow.append(4)
+                            self.call_flow.append(iter)
+                            #self.call_flow.append(4)
                             print(self.call_flow)
 
 
