@@ -2,6 +2,7 @@ package com.bedrankarakoc.mobilesentinel;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -82,7 +83,7 @@ public class HomeBottomBar extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        System.out.println("Pressed back");
+        // Disable OS return button
     }
 
 
@@ -123,7 +124,7 @@ public class HomeBottomBar extends AppCompatActivity {
     // Create logging config files (from raw resources) to external storage
     public void createConfig(String filename) {
         String configDir = "/logs";
-        InputStream inputStream = mContext.getResources().openRawResource(R.raw.full_diag);
+        InputStream inputStream = mContext.getResources().openRawResource(R.raw.rrc_diag);
 
         File f = new File(filename + ".cfg");
         try {
@@ -179,6 +180,7 @@ public class HomeBottomBar extends AppCompatActivity {
     }
 
     public static boolean checkMultiplePermissions(Context context, String... permissions) {
+        // Check if all permissions are granted, if not re-ask
         if (context != null && permissions != null) {
             for (String permission : permissions) {
                 System.out.println(permission);
