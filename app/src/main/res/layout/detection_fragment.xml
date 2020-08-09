@@ -7,7 +7,7 @@
     android:background="@android:color/black">
 
     <TextView
-        android:id="@+id/volteStatusTextView3"
+        android:id="@+id/TACtextview"
         android:layout_width="89dp"
         android:layout_height="25dp"
         android:layout_above="@+id/detectionProgressText"
@@ -15,7 +15,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="44dp"
         android:layout_marginEnd="16dp"
-        android:text="TAC : 1234"
+        android:text="TAC: Null"
         android:textAlignment="viewStart"
         android:textColor="@android:color/holo_orange_dark"
         android:textSize="15sp"
@@ -26,15 +26,32 @@
         app:layout_constraintTop_toBottomOf="@+id/volteStatusTextView" />
 
     <TextView
-        android:id="@+id/volteStatusTextView2"
-        android:layout_width="103dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/PLMNtextview"
+        android:layout_width="131dp"
+        android:layout_height="25dp"
+        android:layout_above="@+id/detectionProgressText"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="8dp"
+        android:text="PLMN : Null"
+        android:textAlignment="viewStart"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.192"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/TACtextview" />
+
+    <TextView
+        android:id="@+id/cellIDtextView"
+        android:layout_width="171dp"
+        android:layout_height="24dp"
         android:layout_above="@+id/detectionProgressText"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="24dp"
         android:layout_marginTop="11dp"
         android:layout_marginEnd="16dp"
-        android:text="CellID : 1234"
+        android:text="CellID: Null"
         android:textAlignment="viewStart"
         android:textColor="@android:color/holo_orange_dark"
         android:textSize="15sp"
