@@ -55,7 +55,7 @@ public class HomeBottomBar extends AppCompatActivity {
     FragmentManager fragmentManager = getSupportFragmentManager();
     String rrcConfig;
     String fullConfig;
-
+    String rrc_filter_diag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,7 @@ public class HomeBottomBar extends AppCompatActivity {
         mContext = getApplicationContext();
         fullConfig = mContext.getResources().getResourceEntryName(R.raw.full_diag);
         rrcConfig = mContext.getResources().getResourceEntryName(R.raw.rrc_diag);
+        rrc_filter_diag = mContext.getResources().getResourceEntryName(R.raw.rrc_filter_diag);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
 
@@ -124,7 +125,7 @@ public class HomeBottomBar extends AppCompatActivity {
     // Create logging config files (from raw resources) to external storage
     public void createConfig(String filename) {
         String configDir = "/logs";
-        InputStream inputStream = mContext.getResources().openRawResource(R.raw.rrc_diag);
+        InputStream inputStream = mContext.getResources().openRawResource(R.raw.rrc_filter_diag);
 
         File f = new File(filename + ".cfg");
         try {
@@ -170,8 +171,8 @@ public class HomeBottomBar extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (checkMultiplePermissions(HomeBottomBar.this, permissions) == true) {
             System.out.println("All permissions granted");
-            createConfig(fullConfig);
-            createConfig(rrcConfig);
+
+            createConfig(rrc_filter_diag);
         } else {
             System.out.println("Permissions missing");
             showPermissionDialog(HomeBottomBar.this);
