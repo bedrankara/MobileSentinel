@@ -35,10 +35,13 @@ def start_logging(filename):
     except Exception as e:
         print(e)
     # Initiate mdlog and pass config files
-    print(subprocess.check_output(['su','-c', 'mkdir /data/media/0/logs/'+filename]))
-    print(subprocess.check_output(['su','-c', 'chmod 777 /data/media/0/logs/'+filename]))
-    subprocess.Popen(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/RRCDIAG.cfg -o /data/media/0/logs/'+filename])
-    print("Mdlog is running")
+    try:
+        print(subprocess.check_output(['su','-c', 'mkdir /data/media/0/logs/'+filename]))
+        print(subprocess.check_output(['su','-c', 'chmod 777 /data/media/0/logs/'+filename]))
+        subprocess.Popen(['su','-c','diag_mdlog -s 90000 -f /data/media/0/logs/RRCDIAG.cfg -o /data/media/0/logs/'+filename])
+        print("Mdlog is running")
+    except Exception as e:
+        print(e)
 
 def stop_logging():
     #subprocess.Popen(['su','-c','diag_mdlog -k'])
