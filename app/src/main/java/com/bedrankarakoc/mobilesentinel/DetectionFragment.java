@@ -1,5 +1,6 @@
 package com.bedrankarakoc.mobilesentinel;
 
+import com.bedrankarakoc.mobilesentinel.BaseStationLTE;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -42,6 +43,9 @@ public class DetectionFragment extends Fragment {
     private TextView detectionProgressText;
     private TextView cellStatusText;
     private TextView isVolteEnabledText;
+    private TextView cellIDtextview;
+    private TextView TACtextview;
+    private TextView PLMNtextview;
     private TelephonyManager telephonyManager;
     private ProgressBar progressBar;
     private TelecomManager telecomManager;
@@ -50,6 +54,7 @@ public class DetectionFragment extends Fragment {
     private volatile boolean nextIntervall = false;
     ArrayList<LogPacket> packetList;
     private volatile boolean stopDetection = false;
+    private BaseStationLTE baseStationLTE = new BaseStationLTE();
 
 
     @Override
@@ -84,6 +89,9 @@ public class DetectionFragment extends Fragment {
         detectionProgressText = (TextView) view.findViewById(R.id.detectionProgressText);
         cellStatusText = (TextView) view.findViewById(R.id.cellStatusTextView);
         isVolteEnabledText = (TextView) view.findViewById(R.id.volteStatusTextView);
+        cellIDtextview = (TextView) view.findViewById(R.id.cellIDtextView);
+        TACtextview = (TextView) view.findViewById(R.id.TACtextview);
+        PLMNtextview = (TextView) view.findViewById(R.id.PLMNtextview);
         progressBar = view.findViewById(R.id.detectionProgress);
         progressBar.setVisibility(View.INVISIBLE);
         progressBar.animate();
@@ -93,10 +101,19 @@ public class DetectionFragment extends Fragment {
         startDetectionButtonListener();
         stopDetectionButtonListener();
         telephonyManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+        baseStationLTE.setTelephonyManager(telephonyManager);
+        updateCellParameters();
         telecomManager = (TelecomManager) getActivity().getSystemService(Context.TELECOM_SERVICE);
         packetList = new ArrayList<>();
 
         return view;
+    }
+
+    public void updateCellParameters() {
+        baseStationLTE.bindServingCellParameter();
+        cellIDtextview.setText(("Cell ID: " + String.valueOf(baseStationLTE.getCid())));
+        TACtextview.setText("TAC: " + String.valueOf(baseStationLTE.getTac()));
+        PLMNtextview.setText("PLMN: " + String.valueOf(baseStationLTE.getMcc()) + String.valueOf(baseStationLTE.getMnc()) );
     }
 
     public void startDetectionRun(final int intervall) {
@@ -105,6 +122,8 @@ public class DetectionFragment extends Fragment {
             @Override
             public void run() {
                 startDetectionButton.setClickable(false);
+                startDetectionButton.setEnabled(false);
+                startDetectionButton.setBackgroundColor(Color.parseColor("#808080"));
                 progressBar.setVisibility(View.VISIBLE);
             }
         });
@@ -226,6 +245,7 @@ public class DetectionFragment extends Fragment {
         startDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                updateCellParameters();
                 cellStatusText.setText("Cell Status : Test Running");
                 detectionProgressText.setTextColor(Color.GREEN);
                 detectionProgressText.setText("Detection Running");
