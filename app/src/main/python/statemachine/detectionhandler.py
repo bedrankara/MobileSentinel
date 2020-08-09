@@ -43,15 +43,16 @@ class DetectionHandler:
                                     'radioResourceConfigDedicated'][
                                     'drb-ToReleaseList']:
 
+                            print(iter)
                             if len(self.call_flow) != 0:
 
-                                if iter in self.call_flow and 'securityConfigHO' not in self.call_flow:
+                                if iter in self.call_flow:
 
                                     print("VULNERABLE ENB!!!!!")
                                     return True
 
+
                             self.call_flow.append(iter)
-                            #self.call_flow.append(4)
                             print(self.call_flow)
 
 
@@ -75,8 +76,10 @@ class DetectionHandler:
                                     'rrcConnectionReconfiguration-r8']['securityConfigHO'][
                                     'handoverType']:
                             print("HandoverType")
-                            self.call_flow.append('securityConfigHO')
+
                             print(iter)
+                            print("Calling clear")
+                            self.call_flow.clear()
 
 
 
