@@ -142,7 +142,7 @@ public class HomeFragment extends Fragment {
             cellInfoView.setText("Obtained " + cellNumber + " Base Stations" + "\nServing Base station：\n" + servingBaseStation.toString() + "\n");
             for (CellInfo cellInfo : cellInfoList) {
                 BaseStation bs = bindData(cellInfo);
-                System.out.println(bs.toString());
+
 
             }
         }
