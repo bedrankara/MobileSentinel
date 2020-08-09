@@ -3,6 +3,7 @@ package com.bedrankarakoc.mobilesentinel;
 import com.bedrankarakoc.mobilesentinel.BaseStationLTE;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -49,7 +50,7 @@ public class DetectionFragment extends Fragment {
     private TelephonyManager telephonyManager;
     private ProgressBar progressBar;
     private TelecomManager telecomManager;
-    private String phoneNumber = "015221044890";
+    private String phoneNumber;
     public int isVulnerable = 0;
     private volatile boolean nextIntervall = false;
     ArrayList<LogPacket> packetList;
@@ -60,6 +61,7 @@ public class DetectionFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
     }
 
@@ -74,6 +76,7 @@ public class DetectionFragment extends Fragment {
             isVolteEnabledText.setText("isVolteEnabled : False");
             isVolteEnabledText.setTextColor(Color.RED);
         }
+        updateCellParameters();
 
 
     }
@@ -82,6 +85,7 @@ public class DetectionFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Initialize UI elements and properties
         view = inflater.inflate(R.layout.detection_fragment, container, false);
         startDetectionButton = (Button) view.findViewById(R.id.start_detection_button);
         stopDetectionButton = (Button) view.findViewById(R.id.stop_detection_button);
@@ -118,18 +122,19 @@ public class DetectionFragment extends Fragment {
 
     public void startDetectionRun(final int intervall) {
 
+        // UI elements can only be changed on UI thread
+
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 startDetectionButton.setClickable(false);
-                startDetectionButton.setEnabled(false);
-                startDetectionButton.setBackgroundColor(Color.parseColor("#808080"));
                 progressBar.setVisibility(View.VISIBLE);
             }
         });
-
+        // DIAG log filename as current date
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
         filename = sdf.format(new Date());
+
 
         Python py = Python.getInstance();
         PyObject pyf = py.getModule("setup_parser");
@@ -211,6 +216,7 @@ public class DetectionFragment extends Fragment {
                     }
 
                     try {
+                        // Start the test call
                         Intent intent = new Intent(Intent.ACTION_CALL);
                         intent.setData(Uri.parse("tel:" + phoneNumber));
                         startActivity(intent);
@@ -219,17 +225,17 @@ public class DetectionFragment extends Fragment {
                     }
 
                     try {
-
-                        Thread.sleep(5000);
+                        // Call duration 4 seconds, should be enough to catch the bearer
+                        Thread.sleep(4000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
-
+                    // End the test call
                     telecomManager.endCall();
 
                     try {
-
+                        // Wait 3 seconds untill next call so users can click on the abort button if needed
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -245,8 +251,11 @@ public class DetectionFragment extends Fragment {
         startDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SHARED_PREFERENCES", Context.MODE_PRIVATE);
+                phoneNumber = sharedPreferences.getString("CALL_NUMBER", "+4915792389038");
                 updateCellParameters();
-                cellStatusText.setText("Cell Status : Test Running");
+                progressBar.setProgress(0);
+                cellStatusText.setText("Cell: Test Running");
                 detectionProgressText.setTextColor(Color.GREEN);
                 detectionProgressText.setText("Detection Running");
                 System.out.println(isVulnerable);
@@ -255,13 +264,30 @@ public class DetectionFragment extends Fragment {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            startDetectionRun(3);
+                            startDetectionRun(4);
                             while (true) {
                                 if (nextIntervall) {
-                                    System.out.println(isVulnerable);
-                                    startDetectionRun(29);
-                                    nextIntervall = false;
-                                    break;
+                                    if (cellStatusText.getText().toString().matches("Cell: VULNERABLE")) {
+                                        System.out.println("VULN YEEEESSS");
+                                        nextIntervall = false;
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+
+                                                //detectionProgressText.setText("Detection Run finished");
+                                                detectionProgressText.setTextColor(Color.GREEN);
+                                                detectionProgressText.setText("Detection Run finished");
+                                                progressBar.setProgress(progressBar.getMax());
+                                                Toast.makeText(getActivity(), "Vulnerable eNodeB", Toast.LENGTH_LONG).show();
+
+                                            }
+                                        });
+                                        break;
+                                    } else {
+                                        startDetectionRun(29);
+                                        nextIntervall = false;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -302,6 +328,7 @@ public class DetectionFragment extends Fragment {
         });
     }
     // Use reflection to access method with @UnsupportedAppUsage tag
+    // Returns wether VoLTE is enabled or not, may not be 100% reliable
     public boolean isVolteEnabled(TelephonyManager telephonyManager) {
         boolean isVolteEnabled = false;
         try {
