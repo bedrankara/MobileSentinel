@@ -13,6 +13,7 @@ class DetectionHandler:
         self.call_flow = []
 
     def filter_packet(self, rrc_subtype, msg):
+        # Filter for rrcConnectionReconfiguration
         if str(rrc_subtype) == "gsmtap_lte_rrc_types.DL_DCCH":
 
             sch = RRCLTE.EUTRA_RRC_Definitions.DL_DCCH_Message
@@ -23,6 +24,7 @@ class DetectionHandler:
                 return data
 
     def revolte_check(self, rrc_subtype, msg):
+
         parsed_msg = self.filter_packet(rrc_subtype, msg)
         if parsed_msg is not None:
 
@@ -45,13 +47,11 @@ class DetectionHandler:
 
                             print(iter)
                             if len(self.call_flow) != 0:
-
+                                # If DRB ID is reused return True
                                 if iter in self.call_flow:
-
-                                    print("VULNERABLE ENB!!!!!")
                                     return True
 
-
+                            # Add each DRB ID to the list
                             self.call_flow.append(iter)
                             print(self.call_flow)
 
@@ -79,6 +79,7 @@ class DetectionHandler:
 
                             print(iter)
                             print("Calling clear")
+                            # Clear list after a securityConfigHO trigger as old DRB IDs may be reused now
                             self.call_flow.clear()
 
 
