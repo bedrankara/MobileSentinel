@@ -14,7 +14,7 @@ The application includes:
 Download the latest APK build from here (add download link) and install it directly on the device. 
 
 ```
-adb install mobilesentinel.apḱ
+adb install mobilesentinel.apk
 ```
 
 ## Build instructions
