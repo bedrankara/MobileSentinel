@@ -334,7 +334,7 @@ public class DetectionFragment extends Fragment {
                                         break;
                                     } else if (!stopDetection && !updateCellStatus){
                                         filename = sdf.format(new Date());
-                                        startDetectionRun(5, filename);
+                                        startDetectionRun(28, filename);
                                         nextIntervall = false;
                                         stopDetection = false;
                                         updateCellStatus = true;
