@@ -22,6 +22,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -124,7 +128,7 @@ public class HomeBottomBar extends AppCompatActivity {
 
     // Create logging config files (from raw resources) to external storage
     public void createConfig(String filename) {
-        String configDir = "/logs";
+        String configDir = "/MobileSentinel";
         InputStream inputStream = mContext.getResources().openRawResource(R.raw.rrc_filter_diag);
 
         File f = new File(filename + ".cfg");
@@ -171,7 +175,9 @@ public class HomeBottomBar extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (checkMultiplePermissions(HomeBottomBar.this, permissions) == true) {
             System.out.println("All permissions granted");
-
+            Python py = Python.getInstance();
+            PyObject pyf = py.getModule("setup_parser");
+            pyf.callAttr("create_directory");
             createConfig(rrc_filter_diag);
         } else {
             System.out.println("Permissions missing");
@@ -184,9 +190,9 @@ public class HomeBottomBar extends AppCompatActivity {
         // Check if all permissions are granted, if not re-ask
         if (context != null && permissions != null) {
             for (String permission : permissions) {
-                System.out.println(permission);
+                //System.out.println(permission);
                 if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    System.out.println(permission + "Not granted");
+                    //System.out.println(permission + "Not granted");
                     return false;
                 }
             }
