@@ -31,7 +31,8 @@ You can build the application from source as well however, you will need a [Chaq
 ## Tested Devices
  - Xiaomi Mi A3 (Android 9.0)
  - One Plus 6T (Android 9.0)
- 
+ - Xiaomi Mix 3 5G (Android 9.0)
+
 ## Used Libraries 
 Mobile Sentinel uses the following libraries: 
  - [Chaquopy SDK](https://chaquo.com/chaquopy/license/)
