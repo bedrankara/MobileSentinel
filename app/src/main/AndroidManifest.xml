@@ -21,8 +21,7 @@
         android:roundIcon="@mipmap/ic_mobile_sentinel"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PacketViewerActivity"></activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".PacketViewerActivity" />
         <activity android:name=".HomeBottomBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
