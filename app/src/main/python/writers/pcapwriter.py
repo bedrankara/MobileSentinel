@@ -8,12 +8,14 @@ import os
 
 class PcapWriter:
     def __init__(self, filename, port_cp = 4729, port_up = 47290):
+        self.filename = filename + '.pcap'
         self.port_cp = port_cp
         self.port_up = port_up
         self.ip_id = 0
         self.base_address = 0x7f000001
-        d = str(Environment.getExternalStorageDirectory());
-        filepath = os.path.join(d, filename)
+        d = str(Environment.getExternalStorageDirectory()) + '/MobileSentinel/' + filename
+        print("PCAP location:  " + d)
+        filepath = os.path.join(d, self.filename)
         self.pcap_file = open(filepath, 'wb')
         self.eth_hdr = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00'
         pcap_global_hdr = struct.pack('<LHHLLLL',
@@ -25,6 +27,7 @@ class PcapWriter:
                 0xffff,
                 1,
                 )
+
         self.pcap_file.write(pcap_global_hdr)
         self.pcap_file.flush()
 
