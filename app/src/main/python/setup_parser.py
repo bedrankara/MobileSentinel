@@ -31,9 +31,15 @@ def start_logging(filename):
     # Check if log folder exists and has permissions
     try:
         print(subprocess.check_output(['su','-c', 'mkdir /data/media/0/logs']))
+
+    except Exception as e:
+        print(e)
+
+    try:
         print(subprocess.check_output(['su','-c', 'chmod 777 /data/media/0/logs']))
     except Exception as e:
         print(e)
+
     # Initiate mdlog and pass config files
     try:
         print(subprocess.check_output(['su','-c', 'mkdir /data/media/0/logs/'+filename]))
