@@ -53,6 +53,7 @@ public class DetectionFragment extends Fragment {
     private String phoneNumber;
     public int isVulnerable = 0;
     private volatile boolean nextIntervall = false;
+    private volatile boolean updateCellStatus = false;
     ArrayList<LogPacket> packetList;
     private volatile boolean stopDetection = false;
     private BaseStationLTE baseStationLTE = new BaseStationLTE();
@@ -65,7 +66,7 @@ public class DetectionFragment extends Fragment {
 
     }
 
-    // TODO: Pay attention to Fragment Lifecycle https://developer.android.com/guide/components/fragments.html#Creating
+
     @Override
     public void onStart() {
         super.onStart();
@@ -100,7 +101,7 @@ public class DetectionFragment extends Fragment {
         progressBar.setVisibility(View.INVISIBLE);
         progressBar.animate();
         detectionProgressText.setVisibility(View.INVISIBLE);
-        progressBar.setMax(32);
+        progressBar.setMax(33);
         progressBar.setScaleY(3f);
         startDetectionButtonListener();
         stopDetectionButtonListener();
@@ -151,7 +152,7 @@ public class DetectionFragment extends Fragment {
         });
 
 
-        stopDetection = false;
+
 
         new Thread(new Runnable() {
             @Override
@@ -194,6 +195,17 @@ public class DetectionFragment extends Fragment {
                             if (f.getName().endsWith(".qmdl")) {
                                 qmdlFilename = f.getName();
                             }
+                        }
+
+                        if (qmdlFilename.isEmpty()) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), "Error: No DIAG Logs found", Toast.LENGTH_LONG).show();
+
+                                }
+                            });
+                            break;
                         }
 
 
@@ -255,6 +267,7 @@ public class DetectionFragment extends Fragment {
                 phoneNumber = sharedPreferences.getString("CALL_NUMBER", "+4915792389038");
                 updateCellParameters();
                 progressBar.setProgress(0);
+                cellStatusText.setTextColor(Color.CYAN);
                 cellStatusText.setText("Cell: Test Running");
                 detectionProgressText.setTextColor(Color.GREEN);
                 detectionProgressText.setText("Detection Running");
@@ -268,24 +281,45 @@ public class DetectionFragment extends Fragment {
                             while (true) {
                                 if (nextIntervall) {
                                     if (cellStatusText.getText().toString().matches("Cell: VULNERABLE")) {
-                                        System.out.println("VULN YEEEESSS");
                                         nextIntervall = false;
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
 
-                                                //detectionProgressText.setText("Detection Run finished");
+                                                cellStatusText.setTextColor(Color.RED);
                                                 detectionProgressText.setTextColor(Color.GREEN);
                                                 detectionProgressText.setText("Detection Run finished");
                                                 progressBar.setProgress(progressBar.getMax());
-                                                Toast.makeText(getActivity(), "Vulnerable eNodeB", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getActivity(), "Vulnerable eNodeB !", Toast.LENGTH_LONG).show();
 
                                             }
                                         });
                                         break;
-                                    } else {
-                                        startDetectionRun(29);
+                                    } else if (!stopDetection && !updateCellStatus){
+                                        startDetectionRun(28);
                                         nextIntervall = false;
+                                        stopDetection = false;
+                                        updateCellStatus = true;
+                                    } else if (updateCellStatus) {
+                                        if (stopDetection) {
+                                            stopDetection = false;
+                                            break;
+                                        }
+                                        System.out.println("else case");
+                                        updateCellStatus = false;
+                                        nextIntervall = false;
+                                        stopDetection = false;
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                cellStatusText.setTextColor(Color.GREEN);
+                                                cellStatusText.setText("Cell: Not vulnerable");
+                                                progressBar.setProgress(progressBar.getMax());
+                                                detectionProgressText.setTextColor(Color.GREEN);
+                                                detectionProgressText.setText("Detection Run Finished");
+                                                Toast.makeText(getActivity(), "eNodeB is not vulnerable", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
                                         break;
                                     }
                                 }
@@ -316,11 +350,12 @@ public class DetectionFragment extends Fragment {
 
                 detectionProgressText.setTextColor(Color.RED);
                 detectionProgressText.setText("Stopping Detection");
+                cellStatusText.setTextColor(Color.RED);
                 cellStatusText.setText("Cell Status : Not Tested");
                 progressBar.setProgress(progressBar.getMax());
                 stopDetectionButton.setClickable(false);
                 stopDetection = true;
-                detectionProgressText.setText("Detection Stopped");
+
 
 
 
