@@ -52,8 +52,11 @@ public class DetectionFragment extends Fragment {
     private TelecomManager telecomManager;
     private String phoneNumber;
     public int isVulnerable = 0;
+    private volatile int currentIter = 0;
+    private volatile int currentIntervall = 0;
     private volatile boolean nextIntervall = false;
     private volatile boolean updateCellStatus = false;
+    private volatile boolean reachedWrapAround = false;
     ArrayList<LogPacket> packetList;
     private volatile boolean stopDetection = false;
     private BaseStationLTE baseStationLTE = new BaseStationLTE();
@@ -121,20 +124,18 @@ public class DetectionFragment extends Fragment {
         PLMNtextview.setText("PLMN: " + String.valueOf(baseStationLTE.getMcc()) + String.valueOf(baseStationLTE.getMnc()) );
     }
 
-    public void startDetectionRun(final int intervall) {
+    public void startDetectionRun(final int intervall, final String filename) {
 
         // UI elements can only be changed on UI thread
-
+        currentIntervall = intervall;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 startDetectionButton.setClickable(false);
                 progressBar.setVisibility(View.VISIBLE);
+                detectionProgressText.setText("Detection Running");
             }
         });
-        // DIAG log filename as current date
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-        filename = sdf.format(new Date());
 
 
         Python py = Python.getInstance();
@@ -151,9 +152,6 @@ public class DetectionFragment extends Fragment {
             }
         });
 
-
-
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -162,6 +160,7 @@ public class DetectionFragment extends Fragment {
 
                     //progressBar.setProgress(i + 1, true);
                     progressBar.incrementProgressBy(1);
+                    currentIter = i;
 
 
                     if (stopDetection == true || i == intervall) {
@@ -184,9 +183,7 @@ public class DetectionFragment extends Fragment {
                             e.printStackTrace();
                         }
 
-                        File baseDir = new File(Environment.getExternalStorageDirectory() + "/logs/" + filename);
-                        System.out.println(baseDir);
-
+                        File baseDir = new File(Environment.getExternalStorageDirectory() + "/MobileSentinel/" + filename);
 
                         // TODO: Dirty
                         String qmdlFilename = "";
@@ -219,7 +216,31 @@ public class DetectionFragment extends Fragment {
 
                                 //detectionProgressText.setText("Detection Run finished");
                                 detectionProgressText.setTextColor(Color.GREEN);
-                                nextIntervall = true;
+                                detectionProgressText.setText("Parsed Logs");
+                                if (stopDetection) {
+                                    nextIntervall = false;
+                                    //stopDetection = false;
+                                    updateCellStatus = false;
+                                }
+                                else if (currentIter == 4 && currentIntervall == 4 ) {
+                                    nextIntervall = true;
+                                }
+                                else if (currentIter == 5 && currentIntervall == 5) {
+                                    //reachedWrapAround = true;
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            cellStatusText.setTextColor(Color.GREEN);
+                                            cellStatusText.setText("Cell: Not vulnerable");
+                                            progressBar.setProgress(progressBar.getMax());
+                                            detectionProgressText.setTextColor(Color.GREEN);
+                                            detectionProgressText.setText("Detection Run Finished");
+                                            Toast.makeText(getActivity(), "eNodeB is not vulnerable", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+
+
                             }
                         });
                         startDetectionButton.setClickable(true);
@@ -263,21 +284,37 @@ public class DetectionFragment extends Fragment {
         startDetectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                currentIter = 0;
+                currentIntervall = 0;
+                nextIntervall = false;
+                updateCellStatus = false;
+                reachedWrapAround = false;
+                stopDetection = false;
+
+                try {
+                    telecomManager.endCall();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 SharedPreferences sharedPreferences = getActivity().getSharedPreferences("SHARED_PREFERENCES", Context.MODE_PRIVATE);
                 phoneNumber = sharedPreferences.getString("CALL_NUMBER", "+4915792389038");
                 updateCellParameters();
+                // DIAG log filename as current date
+                final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+
                 progressBar.setProgress(0);
                 cellStatusText.setTextColor(Color.CYAN);
                 cellStatusText.setText("Cell: Test Running");
                 detectionProgressText.setTextColor(Color.GREEN);
                 detectionProgressText.setText("Detection Running");
-                System.out.println(isVulnerable);
-                if (isVolteEnabled(telephonyManager) == true) {
+                if (isVolteEnabled(telephonyManager)) {
                     isVolteEnabledText.setText("isVolteEnabled : True");
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            startDetectionRun(4);
+                            filename = sdf.format(new Date());
+                            startDetectionRun(4, filename);
                             while (true) {
                                 if (nextIntervall) {
                                     if (cellStatusText.getText().toString().matches("Cell: VULNERABLE")) {
@@ -296,16 +333,21 @@ public class DetectionFragment extends Fragment {
                                         });
                                         break;
                                     } else if (!stopDetection && !updateCellStatus){
-                                        startDetectionRun(28);
+                                        filename = sdf.format(new Date());
+                                        startDetectionRun(5, filename);
                                         nextIntervall = false;
                                         stopDetection = false;
                                         updateCellStatus = true;
-                                    } else if (updateCellStatus) {
-                                        if (stopDetection) {
+                                        break;
+                                    } else if (reachedWrapAround) {
+                                        reachedWrapAround = false;
+                                        /*if (stopDetection) {
+                                            System.out.println("Case 3.1");
                                             stopDetection = false;
+                                            nextIntervall = false;
+                                            updateCellStatus = false;
                                             break;
-                                        }
-                                        System.out.println("else case");
+                                        }*/
                                         updateCellStatus = false;
                                         nextIntervall = false;
                                         stopDetection = false;
@@ -355,6 +397,7 @@ public class DetectionFragment extends Fragment {
                 progressBar.setProgress(progressBar.getMax());
                 stopDetectionButton.setClickable(false);
                 stopDetection = true;
+                nextIntervall = false;
 
 
 
